@@ -48,11 +48,11 @@ Since the UI component is built with React, the easiest way to use it in Angular
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-<!-- Library & Styles (v0.1.13) -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.js"></script>
+<!-- Library & Styles (v0.1.14) -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.14/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.14/dist/bundle.react.umd.css"
 />
 ```
 
