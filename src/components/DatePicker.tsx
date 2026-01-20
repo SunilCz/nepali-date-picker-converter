@@ -10,7 +10,7 @@ import { toNepaliNumeral } from '../utils/formatter';
 import './styles.css';
 import { DatePickerResult, LanguageCode, Theme } from '../core/types';
 
-interface Props {
+export interface NepaliDatePickerProps {
     onChange?: (result: DatePickerResult | null) => void;
     theme?: Theme;
     value?: string;
@@ -20,7 +20,7 @@ interface Props {
     yearLan?: LanguageCode;
 }
 
-export const NepaliDatePicker: React.FC<Props> = ({
+export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     onChange,
     theme,
     value,
@@ -100,7 +100,8 @@ export const NepaliDatePicker: React.FC<Props> = ({
         onChange?.({
             bs: dateStr,
             ad: bsToAd(y, m, d),
-            nepali: toNepaliNumeral(dateStr)
+            nepali: toNepaliNumeral(dateStr),
+            bsDate: { year: y, month: m, day: d }
         });
     };
 

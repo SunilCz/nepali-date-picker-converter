@@ -27,6 +27,8 @@ export interface DatePickerResult {
   ad: Date;
   /** The Nepali numeral version of the BS date (e.g., "२०८२-०९-३०") */
   nepali: string;
+  /** The BS date as an object */
+  bsDate: BSDate;
 }
 
 export interface Theme {
