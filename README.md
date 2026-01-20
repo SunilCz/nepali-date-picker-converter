@@ -18,13 +18,41 @@ A comprehensive library for converting between Nepali (Bikram Sambat) and Englis
 
 ## 📦 Installation
 
+### Option 1: npm (Recommended for React/Angular projects)
+
 ```bash
 npm install nepali-date-picker-converter
 ```
 
 For React component, also install React (if not already installed):
+
 ```bash
 npm install react react-dom
+```
+
+### Option 2: CDN (Recommended for PHP/Vanilla JS)
+
+You can use the library directly in your HTML files.
+
+#### Core Logic Only (**React-Free**, 16KB)
+
+```html
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.umd.js"></script>
+```
+
+#### Full UI Component (Requires React)
+
+```html
+<!-- Dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- Library & Styles -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.js"></script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.css"
+/>
 ```
 
 ## 🚀 Quick Start
@@ -32,46 +60,50 @@ npm install react react-dom
 ### JavaScript/TypeScript (Core Library)
 
 ```typescript
-import { adToBs, bsToAd, NepaliDate } from 'nepali-date-picker-converter';
+import { adToBs, bsToAd, NepaliDate } from "nepali-date-picker-converter";
 
 // Convert English date to Nepali
 const nepaliDate = adToBs(new Date(2024, 0, 15));
-console.log(nepaliDate); 
+console.log(nepaliDate);
 // { year: 2080, month: 10, day: 2 }
 
 // Convert Nepali date to English
 const englishDate = bsToAd(2080, 10, 15);
-console.log(englishDate); 
+console.log(englishDate);
 // Date object: 2024-01-29
+```
 
-// Using NepaliDate class
-const today = NepaliDate.today();
-console.log(today.getYear()); // 2082
-console.log(today.format('YYYY-MM-DD')); // "२०८२-१०-६" (with Nepali numerals)
+### Vanilla JS / PHP / Laravel (No React knowledge needed)
+
+Use the `mountNepaliDatePicker` helper to embed the UI component without writing React code.
+
+```html
+<div id="datepicker"></div>
+
+<script>
+  const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
+
+  mountNepaliDatePicker("#datepicker", {
+    onChange: (date) => console.log("Selected:", date),
+    theme: { primary: "#2563eb" },
+  });
+</script>
 ```
 
 ### React Component
 
 ```tsx
-import React, { useState } from 'react';
-import { NepaliDatePicker } from 'nepali-date-picker-converter';
-import 'nepali-date-picker-converter/dist/components/styles.css';
+import React, { useState } from "react";
+import { NepaliDatePicker } from "nepali-date-picker-converter";
+import "nepali-date-picker-converter/dist/bundle.react.umd.css";
 
 function App() {
   const [date, setDate] = useState(null);
 
   return (
     <NepaliDatePicker
-      onChange={(result) => {
-        console.log('BS Date:', result.bs);      // "2080-10-15"
-        console.log('AD Date:', result.ad);      // Date object
-        console.log('Nepali Numeral:', result.nepali); // "२०८०-१०-१५"
-        setDate(result);
-      }}
-      theme={{
-        primary: '#2563eb',
-        radius: '12px'
-      }}
+      onChange={(result) => setDate(result)}
+      theme={{ primary: "#2563eb" }}
     />
   );
 }
@@ -80,59 +112,23 @@ function App() {
 ### Angular
 
 ```typescript
-import { Component } from '@angular/core';
-import { NepaliDateService } from 'nepali-date-picker-converter/angular/nepali-date.service';
+import { Component, AfterViewInit, ElementRef, ViewChild } from "@angular/core";
 
 @Component({
-  selector: 'app-date-converter',
-  template: `
-    <div>
-      <p>Today in BS: {{ todayBs | json }}</p>
-      <p>Formatted: {{ formattedDate }}</p>
-    </div>
-  `
+  selector: "app-root",
+  template: "<div #picker></div>",
 })
-export class DateConverterComponent {
-  todayBs: any;
-  formattedDate: string = '';
+export class AppComponent implements AfterViewInit {
+  @ViewChild("picker") picker!: ElementRef;
 
-  constructor(private nepaliDateService: NepaliDateService) {
-    this.todayBs = this.nepaliDateService.todayBs();
-    this.formattedDate = this.nepaliDateService.formatBs(this.todayBs);
+  ngAfterViewInit() {
+    // Via CDN or window object
+    const { mountNepaliDatePicker } = (window as any).NepaliDatePickerConverter;
+    mountNepaliDatePicker(this.picker.nativeElement, {
+      onChange: (date: any) => console.log(date),
+    });
   }
 }
-```
-
-**Or use directly:**
-
-```typescript
-import { adToBs, bsToAd } from 'nepali-date-picker-converter';
-
-const bsDate = adToBs(new Date(2024, 0, 15));
-const adDate = bsToAd(2080, 10, 15);
-```
-
-### PHP / Laravel
-
-```php
-<?php
-require_once 'path/to/NepaliDateConverter.php';
-
-use NepaliDateConverter;
-
-// Convert AD to BS
-$bsDate = NepaliDateConverter::adToBs(new DateTime('2024-01-15'));
-echo $bsDate['year'] . '-' . $bsDate['month'] . '-' . $bsDate['day'];
-// Output: 2080-10-2
-
-// Convert BS to AD
-$adDate = NepaliDateConverter::bsToAd(2080, 10, 15);
-echo $adDate->format('Y-m-d');
-// Output: 2024-01-29
-
-// Format BS date
-$formatted = NepaliDateConverter::formatBs($bsDate, 'YYYY-MM-DD');
-echo $formatted;
 ```
 
 ## 📚 API Reference
@@ -141,293 +137,54 @@ echo $formatted;
 
 #### `adToBs(adDate: Date): BSDate`
 
-Converts an English (Gregorian) date to Nepali (Bikram Sambat) date.
+Converts English (Gregorian) to Nepali (Bikram Sambat).
 
-**Parameters:**
-- `adDate` (Date): JavaScript Date object
+#### `bsToAd(year: number, month: number, day: number): Date`
 
-**Returns:**
-- `BSDate`: Object with `year`, `month`, and `day` properties
+Converts Nepali (Bikram Sambat) to English (Gregorian).
 
-**Example:**
-```typescript
-const bsDate = adToBs(new Date(2024, 0, 15));
-// { year: 2080, month: 10, day: 2 }
-```
+#### `mountNepaliDatePicker(element: string | HTMLElement, props: Props)`
 
-#### `bsToAd(bsYear: number, bsMonth: number, bsDay: number): Date`
-
-Converts a Nepali (Bikram Sambat) date to English (Gregorian) date.
-
-**Parameters:**
-- `bsYear` (number): Nepali year (e.g., 2080)
-- `bsMonth` (number): Nepali month (1-12)
-- `bsDay` (number): Nepali day (1-32)
-
-**Returns:**
-- `Date`: JavaScript Date object
+Mounts the UI component into a DOM element. Ideal for non-React environments.
 
 **Example:**
-```typescript
-const adDate = bsToAd(2080, 10, 15);
-// Date object representing 2024-01-29
-```
 
-#### `formatBs(date: BSDate, format?: DateFormat, displayMonth?: DisplayType, displayDay?: DisplayType): string`
-
-Formats a BS date as a string.
-
-**Parameters:**
-- `date` (BSDate): BSDate object
-- `format` (DateFormat, optional): Date format - `YYYY-MM-DD`, `DD-MM-YYYY`, `DD/MM/YYYY`, `YYYY/MM/DD`
-- `displayMonth` (DisplayType, optional): `numeric`, `short`, or `long`
-- `displayDay` (DisplayType, optional): `numeric`, `short`, or `long`
-
-**Returns:**
-- `string`: Formatted date string
-
-**Example:**
-```typescript
-const bsDate = { year: 2080, month: 10, day: 15 };
-formatBs(bsDate, 'YYYY-MM-DD'); // "२०८०-१०-१५" (Nepali numerals)
-formatBs(bsDate, 'DD/MM/YYYY', 'long'); // "१५/असार/२०८०"
-```
-
-#### `formatAd(date: Date, format?: DateFormat): string`
-
-Formats an AD date as a string.
-
-**Parameters:**
-- `date` (Date): JavaScript Date object
-- `format` (DateFormat, optional): Date format
-
-**Returns:**
-- `string`: Formatted date string
-
-#### `toNepaliNumeral(str: string | number): string`
-
-Converts English digits to Nepali numerals.
-
-**Example:**
-```typescript
-toNepaliNumeral('2080-10-15'); // "२०८०-१०-१५"
-```
-
-#### `toEnglishNumeral(str: string): string`
-
-Converts Nepali numerals to English digits.
-
-**Example:**
-```typescript
-toEnglishNumeral('२०८०-१०-१५'); // "2080-10-15"
-```
-
-### NepaliDate Class
-
-```typescript
-import { NepaliDate } from 'nepali-date-picker-converter';
-
-// Create from current date
-const nepaliDate = NepaliDate.today();
-
-// Create from Date object
-const nepaliDate2 = new NepaliDate(new Date(2024, 0, 15));
-
-// Create from BS date
-const nepaliDate3 = new NepaliDate({ year: 2080, month: 10, day: 15 });
-
-// Get date components
-nepaliDate.getYear();   // 2080
-nepaliDate.getMonth();  // 10
-nepaliDate.getDate();   // 15
-nepaliDate.getDay();    // 3 (Wednesday, 0=Sunday)
-
-// Format date
-nepaliDate.format('YYYY-MM-DD'); // "२०८०-१०-१५"
-
-// Convert to AD
-const adDate = nepaliDate.toAD(); // Date object
-
-// Get BS date object
-const bsDate = nepaliDate.toBS(); // { year: 2080, month: 10, day: 15 }
+```javascript
+mountNepaliDatePicker("#root", {
+  onChange: (res) => console.log(res),
+  theme: { radius: "8px" },
+});
 ```
 
 ### React Component Props
 
 ```typescript
 interface NepaliDatePickerProps {
-  /** Callback when date is selected */
   onChange?: (result: DatePickerResult | null) => void;
-  
-  /** Theme customization */
   theme?: Theme;
-  
-  /** Initial value (BS date string: YYYY-MM-DD) */
-  value?: string;
-  
-  /** Language for date display */
-  dateLan?: 'en' | 'np';
-  
-  /** Language for months */
-  monthLan?: 'en' | 'np';
-  
-  /** Language for days */
-  dayLan?: 'en' | 'np';
-  
-  /** Language for years */
-  yearLan?: 'en' | 'np';
-}
-
-interface DatePickerResult {
-  /** BS date string (e.g., "2080-10-15") */
-  bs: string;
-  
-  /** Equivalent JavaScript Date object */
-  ad: Date;
-  
-  /** Nepali numeral version (e.g., "२०८०-१०-१५") */
-  nepali: string;
-}
-
-interface Theme {
-  /** Main primary color (default: #2563eb) */
-  primary?: string;
-  
-  /** Light primary color for hover (default: #eff6ff) */
-  primaryLight?: string;
-  
-  /** Accent color */
-  accent?: string;
-  
-  /** Border radius (default: 12px) */
-  radius?: string;
-  
-  /** Font family */
-  fontFamily?: string;
-  
-  /** Box shadow */
-  shadow?: string;
-  
-  /** Input background color */
-  inputBg?: string;
+  value?: string; // "YYYY-MM-DD"
+  dateLan?: "en" | "np";
+  monthLan?: "en" | "np";
+  dayLan?: "en" | "np";
+  yearLan?: "en" | "np";
 }
 ```
 
-## 🎨 Usage Examples
+## 🌐 Framework-Specific Guides
 
-### Basic Conversion
+- **React**: [Reference above](#react-component) or use npm.
+- **Angular**: See [angular/README.md](angular/README.md).
+- **PHP/Laravel**: See [php/README.md](php/README.md).
+- **Vanilla JS**: See [Vanilla JS example](#vanilla-js--php--laravel-no-react-knowledge-needed).
 
-```typescript
-import { adToBs, bsToAd } from 'nepali-date-picker-converter';
+### Vanilla JavaScript (ES Modules)
 
-// Convert today's date
-const today = new Date();
-const todayBS = adToBs(today);
-console.log(`Today in BS: ${todayBS.year}-${todayBS.month}-${todayBS.day}`);
-
-// Convert specific BS date
-const adDate = bsToAd(2080, 10, 15);
-console.log(`BS 2080-10-15 = AD ${adDate.toISOString().split('T')[0]}`);
-```
-
-### React Date Picker with Custom Theme
-
-```tsx
-import { NepaliDatePicker } from 'nepali-date-picker-converter';
-
-<NepaliDatePicker
-  onChange={(result) => console.log(result)}
-  theme={{
-    primary: '#10b981',
-    primaryLight: '#d1fae5',
-    radius: '8px',
-    fontFamily: 'Arial, sans-serif'
-  }}
-  dateLan="np"
-  monthLan="np"
-/>
-```
-
-### Formatting Dates
-
-```typescript
-import { formatBs, formatAd, adToBs } from 'nepali-date-picker-converter';
-
-const today = new Date();
-const bsDate = adToBs(today);
-
-// Format BS date
-formatBs(bsDate, 'YYYY-MM-DD');        // "२०८२-१०-६"
-formatBs(bsDate, 'DD-MM-YYYY');        // "६-१०-२०८२"
-formatBs(bsDate, 'DD/MM/YYYY', 'long'); // "६/असार/२०८२"
-
-// Format AD date
-formatAd(today, 'YYYY-MM-DD');  // "2024-01-20"
-formatAd(today, 'DD-MM-YYYY');  // "20-01-2024"
-```
-
-### Using with Forms
-
-```tsx
-import { useState } from 'react';
-import { NepaliDatePicker } from 'nepali-date-picker-converter';
-
-function MyForm() {
-  const [birthDate, setBirthDate] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (birthDate) {
-      console.log('BS Date:', birthDate.bs);
-      console.log('AD Date:', birthDate.ad);
-      // Submit to backend...
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>Birth Date (Nepali):</label>
-      <NepaliDatePicker
-        onChange={setBirthDate}
-        value={birthDate?.bs}
-      />
-      <button type="submit">Submit</button>
-    </form>
-  );
-}
-```
-
-## 📅 Supported Date Range
-
-- **Nepali Calendar**: 2000 BS to 2099 BS
-- **English Calendar**: Approximately 1943 AD to 2043 AD
-- Dates outside this range will throw an error
-
-## 🌐 Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- React 16.8+ for React components
-- Node.js 12+ for server-side usage
-
-## 📖 Framework-Specific Guides
-
-### React
-See React example above. Make sure to import the CSS:
-```tsx
-import 'nepali-date-picker-converter/dist/components/styles.css';
-```
-
-### Angular
-See `angular/README.md` for detailed Angular integration guide.
-
-### PHP/Laravel
-Copy the `php/NepaliDateConverter.php` file to your project and use as shown in examples above.
-
-### Vanilla JavaScript
 ```html
 <script type="module">
-  import { adToBs, bsToAd } from './node_modules/nepali-date-picker-converter/dist/index.js';
-  
+  import {
+    adToBs,
+    bsToAd,
+  } from "https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/index.js";
   const bsDate = adToBs(new Date());
   console.log(bsDate);
 </script>
