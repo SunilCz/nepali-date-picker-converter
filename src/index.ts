@@ -8,8 +8,7 @@ export { NepaliDate } from "./core/NepaliDate";
 // Note: CSS needs to be imported separately: import 'nepali-date-picker-converter/dist/components/styles.css'
 export { NepaliDatePicker } from "./components/DatePicker";
 
-// Default export
-export default {
-  version: "0.1.0",
-  name: "nepali-date-picker-converter",
-};
+// Version info
+export const VERSION = "0.1.2";
+export const NAME = "nepali-date-picker-converter";
+
