@@ -14,9 +14,7 @@ Copy the `NepaliDateConverter.php` file to your PHP project or Laravel app.
 ```json
 {
   "autoload": {
-    "files": [
-      "app/Helpers/NepaliDateConverter.php"
-    ]
+    "files": ["app/Helpers/NepaliDateConverter.php"]
   }
 }
 ```
@@ -58,18 +56,18 @@ class DateController extends Controller
     {
         $adDate = new \DateTime($request->input('date'));
         $bsDate = NepaliDateConverter::adToBs($adDate);
-        
+
         return response()->json([
             'bs' => $bsDate['year'] . '-' . $bsDate['month'] . '-' . $bsDate['day'],
             'ad' => $adDate->format('Y-m-d')
         ]);
     }
-    
+
     public function getToday()
     {
         $today = new \DateTime();
         $todayBS = NepaliDateConverter::adToBs($today);
-        
+
         return [
             'ad' => $today->format('Y-m-d'),
             'bs' => $todayBS['year'] . '-' . $todayBS['month'] . '-' . $todayBS['day']
@@ -132,9 +130,11 @@ $adDate = bs_to_ad(2080, 10, 15);
 Convert English (AD) date to Nepali (BS) date.
 
 **Parameters:**
+
 - `$adDate` (DateTime|string): English date
 
 **Returns:**
+
 - `array`: Array with `year`, `month`, and `day` keys
 
 #### `bsToAd(int $bsYear, int $bsMonth, int $bsDay): DateTime`
@@ -142,11 +142,13 @@ Convert English (AD) date to Nepali (BS) date.
 Convert Nepali (BS) date to English (AD) date.
 
 **Parameters:**
+
 - `$bsYear` (int): Nepali year
 - `$bsMonth` (int): Nepali month (1-12)
 - `$bsDay` (int): Nepali day
 
 **Returns:**
+
 - `DateTime`: English date object
 
 #### `formatBs(array $bsDate, string $format = 'YYYY-MM-DD'): string`
@@ -154,15 +156,59 @@ Convert Nepali (BS) date to English (AD) date.
 Format BS date as string.
 
 **Parameters:**
+
 - `$bsDate` (array): Array with `year`, `month`, `day`
 - `$format` (string): Date format
 
 **Returns:**
+
 - `string`: Formatted date string
 
 #### `formatAd(DateTime $adDate, string $format = 'YYYY-MM-DD'): string`
 
 Format AD date as string.
+
+## UI Component (Date Picker) Integration
+
+You can easily add the Nepali Date Picker UI to your PHP pages (Vanilla or Laravel Blade) using the CDN bundle. No React knowledge is required.
+
+### 1. Add Scripts to your Template
+
+Include these in your `<head>` or before `</body>`:
+
+```html
+<!-- Dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- Library -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.js"></script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.css"
+/>
+```
+
+### 2. Initialize the Picker
+
+Add a target `div` and call the mounting helper:
+
+```html
+<div id="nepali-datepicker"></div>
+
+<script>
+  const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
+
+  mountNepaliDatePicker("#nepali-datepicker", {
+    onChange: (date) => {
+      console.log("Selected Date:", date);
+      // You can update a hidden input field for form submission
+      // document.getElementById('my-hidden-input').value = date.bs;
+    },
+    theme: { primary: "#2563eb" },
+  });
+</script>
+```
 
 ## Supported Date Range
 
