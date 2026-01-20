@@ -15,16 +15,16 @@ export type { NepaliDatePickerProps } from "./components/DatePicker";
 export { mountNepaliDatePicker } from "./utils/mount";
 
 // Meta
-export const VERSION = "0.1.10";
+export const VERSION = "0.1.12";
 export const NAME = "nepali-date-picker-converter";
 
 // Default Export
 export default {
-    ...converter,
-    ...formatter,
-    NepaliDate,
-    NepaliDatePicker,
-    mountNepaliDatePicker,
-    VERSION,
-    NAME
+  ...converter,
+  ...formatter,
+  NepaliDate,
+  NepaliDatePicker,
+  mountNepaliDatePicker,
+  VERSION,
+  NAME,
 };

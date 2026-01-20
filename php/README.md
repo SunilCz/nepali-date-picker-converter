@@ -13,7 +13,7 @@ Comprehensive guide for integrating Nepali date features (UI and logic) into PHP
 
 This method uses the library's JavaScript UMD bundle to mount the React-based date picker onto any standard HTML element. **No React knowledge is required.**
 
-### 1. Unified Setup (v0.1.10)
+### 1. Unified Setup (v0.1.12)
 
 Include these tags in your layout file (e.g., `app.blade.php` or `header.php`):
 
@@ -23,10 +23,10 @@ Include these tags in your layout file (e.g., `app.blade.php` or `header.php`):
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- Nepali Date Picker & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.10/dist/bundle.react.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.10/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.css"
 />
 ```
 
