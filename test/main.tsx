@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client';
 import { NepaliDatePicker, adToBs, bsToAd, formatBs, toNepaliNumeral } from 'nepali-date-picker-converter';
 // Import CSS - path relative to src directory through alias
 import 'nepali-date-picker-converter/components/styles.css';
+import LanguageSwitcherDemo from './LanguageSwitcherDemo';
 
 // Converter Component
 const ConverterExample = () => {
@@ -252,6 +253,11 @@ const DatePickerExample = () => {
 const App = () => {
   return (
     <div>
+      {/* Search for Language Switcher Section */}
+      <div className="test-section" style={{ background: '#f0fdf4', borderLeftColor: '#10b981' }}>
+        <LanguageSwitcherDemo />
+      </div>
+
       {/* Date Picker Section */}
       <div className="test-section">
         <h2>📅 Interactive Date Picker</h2>

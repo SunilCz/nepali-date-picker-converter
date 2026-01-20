@@ -18,9 +18,11 @@ export interface NepaliDatePickerProps {
     monthLan?: LanguageCode;
     dayLan?: LanguageCode;
     yearLan?: LanguageCode;
+    language?: LanguageCode;
+    showLanguageSwitcher?: boolean;
 }
 
-export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
+export const NepaliDatePicker = ({
     onChange,
     theme,
     value,
@@ -28,8 +30,11 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     monthLan = 'en',
     dayLan = 'en',
     yearLan = 'en',
-}) => {
+    language = 'en',
+    showLanguageSwitcher = false,
+}: NepaliDatePickerProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
     const [selectedDate, setSelectedDate] = useState<string>(value || "");
     const [activeDropdown, setActiveDropdown] = useState<'m' | 'y' | null>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
@@ -64,8 +69,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
         '--nck-bg-input': theme?.inputBg || '#ffffff',
     } as React.CSSProperties;
 
-    const monthsList = monthLan === 'np' ? NepaliMonthsData.map(m => m.np) : NepaliMonthsData.map(m => m.en);
-    const daysList = dayLan === 'np' ? NepaliDaysData.map(d => d.np) : NepaliDaysData.map(d => d.en);
+    const monthsList = (monthLan === 'np' || (monthLan === 'en' && currentLanguage === 'np')) ? NepaliMonthsData.map(m => m.np) : NepaliMonthsData.map(m => m.en);
+    const daysList = (dayLan === 'np' || (dayLan === 'en' && currentLanguage === 'np')) ? NepaliDaysData.map(d => d.np) : NepaliDaysData.map(d => d.en);
     const availableYears = useMemo(() => NP_MONTHS_DATA.map((_, i) => NP_INITIAL_YEAR + i), []);
 
     const monthDays = useMemo(() => {
@@ -111,8 +116,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                 <input
                     className="nck-input"
                     readOnly
-                    value={dateLan === 'np' ? toNepaliNumeral(selectedDate) : selectedDate}
-                    placeholder={dateLan === 'np' ? "२०८२-०९-३०" : "YYYY-MM-DD"}
+                    value={(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(selectedDate) : selectedDate}
+                    placeholder={(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? "२०८२-०९-३०" : "YYYY-MM-DD"}
                 />
                 <div className="nck-input-actions">
                     <div className="nck-icon">
@@ -144,23 +149,37 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                         {/* Custom Year Dropdown */}
                         <div className="nck-custom-select">
                             <div className="nck-select-trigger" onClick={() => setActiveDropdown(activeDropdown === 'y' ? null : 'y')}>
-                                {yearLan === 'np' ? toNepaliNumeral(view.y) : view.y}
+                                {(yearLan === 'np' || (yearLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(view.y) : view.y}
                             </div>
                             {activeDropdown === 'y' && (
                                 <div className="nck-select-options">
                                     {availableYears.map(y => (
                                         <div key={y} className={`nck-option ${view.y === y ? 'selected' : ''}`}
                                             onClick={() => { setView({ ...view, y: y }); setActiveDropdown(null); }}>
-                                            {yearLan === 'np' ? toNepaliNumeral(y) : y}
+                                            {(yearLan === 'np' || (yearLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(y) : y}
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
+
+                        {/* Language Switcher */}
+                        {showLanguageSwitcher && (
+                            <button 
+                                className="nck-lang-switcher" 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentLanguage(currentLanguage === 'en' ? 'np' : 'en');
+                                }}
+                                title={currentLanguage === 'en' ? "नेपालीमा बदल्नुहोस्" : "Switch to English"}
+                            >
+                                {currentLanguage === 'en' ? 'ने' : 'EN'}
+                            </button>
+                        )}
                     </div>
 
                     <div className="nck-week-grid">
-                        {daysList.map((d, i) => <div key={i} className="nck-week-day">{dayLan === 'np' ? d.substring(0, 3) : d.substring(0, 2)}</div>)}
+                        {daysList.map((d, i) => <div key={i} className="nck-week-day">{(dayLan === 'np' || (dayLan === 'en' && currentLanguage === 'np')) ? d.substring(0, 3) : d.substring(0, 2)}</div>)}
                     </div>
 
                     <div className="nck-date-grid">
@@ -171,7 +190,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                             const isToday = todayBS.year === view.y && todayBS.month === (view.m + 1) && todayBS.day === d;
                             return (
                                 <div key={d} className={`nck-cell ${isSelected ? 'active' : ''} ${isToday ? 'today' : ''}`} onClick={() => handleSelect(d)}>
-                                    {dateLan === 'np' ? toNepaliNumeral(d) : d}
+                                    {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(d) : d}
                                 </div>
                             );
                         })}
@@ -179,10 +198,10 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
                     <div className="nck-footer">
                         <button className="nck-footer-btn nck-btn-today" onClick={handleToday}>
-                            {dateLan === 'np' ? 'आज' : 'Today'}
+                            {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? 'आज' : 'Today'}
                         </button>
                         <button className="nck-footer-btn nck-btn-clear" onClick={handleClear}>
-                            {dateLan === 'np' ? 'रद्द' : 'Clear'}
+                            {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? 'रद्द' : 'Clear'}
                         </button>
                     </div>
                 </div>

@@ -10,7 +10,8 @@ export * from "./core/converter";
 export * from "./core/types";
 export { NepaliDate } from "./core/NepaliDate";
 export * from "./utils/formatter";
-export { NepaliDatePicker, NepaliDatePickerProps } from "./components/DatePicker";
+export { NepaliDatePicker } from "./components/DatePicker";
+export type { NepaliDatePickerProps } from "./components/DatePicker";
 export { mountNepaliDatePicker } from "./utils/mount";
 
 // Meta

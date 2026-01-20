@@ -176,11 +176,30 @@ interface NepaliDatePickerProps {
   onChange?: (result: DatePickerResult | null) => void;
   theme?: Theme;
   value?: string; // "YYYY-MM-DD"
-  dateLan?: "en" | "np";
-  monthLan?: "en" | "np";
-  dayLan?: "en" | "np";
   yearLan?: "en" | "np";
+  language?: "en" | "np";
+  showLanguageSwitcher?: boolean;
 }
+```
+
+### 🌐 Multi-Language Support (New)
+
+The picker now supports an interactive language switcher and global language defaults.
+
+```tsx
+// Using props in React
+<NepaliDatePicker
+  language="np" // Start entirely in Nepali
+  showLanguageSwitcher={true} // Show the "ने / EN" toggle button
+/>
+```
+
+```javascript
+// Using mount helper
+mountNepaliDatePicker("#root", {
+  language: "en",
+  showLanguageSwitcher: true,
+});
 ```
 
 ## 🌐 Framework-Specific Guides

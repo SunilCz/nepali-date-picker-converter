@@ -1,6 +1,6 @@
 {
   "name": "nepali-date-picker-converter",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "A Nepali date picker and converter library for converting between Nepali (Bikram Sambat) and English (Gregorian) calendars. Works with React, Angular, PHP, Laravel, and vanilla JavaScript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

@@ -65,6 +65,24 @@ To send the selected date back to your PHP backend, use a **hidden input** that 
 </script>
 ```
 
+### 3. Language & Toggle (New)
+
+You can control the default language and show the interactive language switcher button:
+
+```javascript
+mountNepaliDatePicker("#picker", {
+  // 1. Set default language ('en' or 'np')
+  language: "np",
+
+  // 2. Show the "ने / EN" toggle button in the header
+  showLanguageSwitcher: true,
+
+  // Optional: individual control
+  dateLan: "np",
+  monthLan: "np",
+});
+```
+
 ---
 
 ## ⚙️ Server-Side: Logic & Logic
@@ -143,7 +161,7 @@ Create a reusable Blade component for the date picker.
             ? res.bs
             : "";
         },
-      }
+      },
     );
   });
 </script>
