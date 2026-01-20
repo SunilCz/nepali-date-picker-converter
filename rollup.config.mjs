@@ -6,7 +6,11 @@ import typescript from "@rollup/plugin-typescript";
 const plugins = [
   resolve(),
   commonjs(),
-  typescript(),
+  typescript({
+    compilerOptions: {
+      module: "ESNext",
+    }
+  }),
   postcss({
     extract: true,
     minimize: true,
@@ -30,17 +34,24 @@ export default [
   {
     input: "src/react.ts",
     external: ["react", "react-dom"],
-    output: {
-      file: "dist/bundle.react.umd.js",
-      format: "umd",
-      name: "NepaliDatePickerConverter",
-      sourcemap: true,
-      globals: {
-        react: "React",
-        "react-dom": "ReactDOM",
+    output: [
+      {
+        file: "dist/bundle.react.umd.js",
+        format: "umd",
+        name: "NepaliDatePickerConverter",
+        sourcemap: true,
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+        },
+        exports: "named",
       },
-      exports: "named",
-    },
+      {
+        file: "dist/index.mjs",
+        format: "es",
+        sourcemap: true,
+      }
+    ],
     plugins,
   },
 ];
