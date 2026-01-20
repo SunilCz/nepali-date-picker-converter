@@ -1,0 +1,49 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Test files
+test/
+examples/
+context/
+
+# Development files
+tsconfig.json
+vite.config.ts
+nodemon.json
+.gitignore
+.npmignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+coverage/
+
+# Documentation (keep README and LICENSE)
+*.md
+!README.md
+
+# Logs
+*.log
+npm-debug.log*
+
+# Development scripts
+*.config.js
+*.config.ts
+
+# Build artifacts (dist-browser is for local testing)
+dist-browser/
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

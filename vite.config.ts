@@ -1,0 +1,20 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  root: path.resolve(__dirname, 'test'), // Set test directory as root
+  resolve: {
+    alias: {
+      'nepali-date-picker-converter': path.resolve(__dirname, 'src'),
+    },
+  },
+  server: {
+    port: 5173,
+    open: true,
+  },
+  build: {
+    outDir: path.resolve(__dirname, 'dist-browser'),
+  },
+});
