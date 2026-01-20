@@ -67,12 +67,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/nepali-date-picker-converter.git"
+    "url": "git+https://github.com/SunilCz/nepali-date-picker-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/nepali-date-picker-converter/issues"
+    "url": "https://github.com/SunilCz/nepali-date-picker-converter/issues"
   },
-  "homepage": "https://github.com/yourusername/nepali-date-picker-converter#readme",
+  "homepage": "https://github.com/SunilCz/nepali-date-picker-converter#readme",
   "directories": {
     "test": "test"
   },
