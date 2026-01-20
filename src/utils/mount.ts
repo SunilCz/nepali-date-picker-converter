@@ -22,20 +22,35 @@ export function mountNepaliDatePicker(
     return null;
   }
 
-  // Handle both React 18+ (createRoot) and legacy React
-  // @ts-ignore
-  if (ReactDOM.createRoot) {
-    // @ts-ignore
-    const root = ReactDOM.createRoot(target);
-    root.render(React.createElement(NepaliDatePicker, props));
-    return {
-      unmount: () => root.unmount(),
-    };
-  } else {
-    // Legacy fallback
-    ReactDOM.render(React.createElement(NepaliDatePicker, props), target);
-    return {
-      unmount: () => ReactDOM.unmountComponentAtNode(target),
-    };
-  }
+  let root: any = null;
+
+  const render = (newProps: any) => {
+    const combinedProps = { ...props, ...newProps };
+    if ((ReactDOM as any).createRoot) {
+      if (!root) {
+        // @ts-ignore
+        root = ReactDOM.createRoot(target);
+      }
+      root.render(React.createElement(NepaliDatePicker, combinedProps));
+    } else {
+      // Legacy fallback
+      ReactDOM.render(React.createElement(NepaliDatePicker, combinedProps), target);
+    }
+  };
+
+  // Initial render
+  render(props);
+
+  return {
+    unmount: () => {
+      if (root) {
+        root.unmount();
+      } else {
+        ReactDOM.unmountComponentAtNode(target);
+      }
+    },
+    setValue: (val: string) => {
+      render({ value: val });
+    }
+  };
 }
