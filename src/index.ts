@@ -14,7 +14,7 @@ export { NepaliDatePicker, NepaliDatePickerProps } from "./components/DatePicker
 export { mountNepaliDatePicker } from "./utils/mount";
 
 // Meta
-export const VERSION = "0.1.9";
+export const VERSION = "0.1.10";
 export const NAME = "nepali-date-picker-converter";
 
 // Default Export
