@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "A Nepali date picker and converter library for converting between Nepali (Bikram Sambat) and English (Gregorian) calendars. Works with React, Angular, PHP, Laravel, and vanilla JavaScript.",
   "main": "dist/index.js",
+  "unpkg": "dist/bundle.umd.js",
+  "browser": "dist/bundle.umd.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -12,7 +14,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build:bundle",
+    "build:bundle": "rollup -c",
     "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "dev:browser": "vite",
     "preview": "vite preview",
@@ -54,6 +57,9 @@
     }
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.27",
     "@types/react-dom": "^18.3.7",
@@ -61,6 +67,9 @@
     "nodemon": "^3.1.9",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "rollup": "^4.55.2",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.4.1"
@@ -125,7 +134,6 @@
     "pstree.remy": "^1.1.8",
     "react-refresh": "^0.17.0",
     "readdirp": "^3.6.0",
-    "rollup": "^4.55.2",
     "scheduler": "^0.27.0",
     "semver": "^7.7.3",
     "simple-update-notifier": "^2.0.0",
