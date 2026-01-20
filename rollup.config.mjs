@@ -16,7 +16,7 @@ const plugins = [
 export default [
   // 1. Core Bundle (React-free)
   {
-    input: "src/index.ts",
+    input: "src/core.ts",
     output: {
       file: "dist/bundle.umd.js",
       format: "umd",
