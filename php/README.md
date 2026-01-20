@@ -1,21 +1,28 @@
-# PHP / Laravel Integration
+# PHP & Laravel Guide
 
-This library provides flexible ways to integrate Nepali date features into PHP and Laravel projects.
+Comprehensive guide for integrating Nepali date features (UI and logic) into PHP and Laravel projects.
 
-## Option 1: CDN (Recommended for UI & Converter)
+## 🚀 Two Ways to Integrate
 
-Use this if you want to add the **Date Picker UI** or use JavaScript-based conversion on the client side.
+1. **Client-Side (CDN)**: Best for adding the interactive Date Picker UI to your forms.
+2. **Server-Side (PHP Class)**: Best for backend logic, report generation, and database conversions.
 
-### 1. Add Scripts to your template (Blade or regular PHP)
+---
 
-Include these in your `<head>` or before `</body>`:
+## 🎨 Client-Side: Interaction & UI
+
+This method uses the library's JavaScript UMD bundle to mount the React-based date picker onto any standard HTML element. **No React knowledge is required.**
+
+### 1. Unified Setup (v0.1.9)
+
+Include these tags in your layout file (e.g., `app.blade.php` or `header.php`):
 
 ```html
-<!-- Dependencies (React 18) -->
+<!-- Dependencies -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-<!-- Library & Styles (v0.1.9) -->
+<!-- Nepali Date Picker & Styles -->
 <script src="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
@@ -23,72 +30,163 @@ Include these in your `<head>` or before `</body>`:
 />
 ```
 
-### 2. Initialize the Picker (No React needed)
+### 2. Integration with PHP Forms
 
-Add a target `div` and call the mounting helper:
+To send the selected date back to your PHP backend, use a **hidden input** that gets updated whenever the user selects a date.
 
 ```html
-<div id="nepali-datepicker"></div>
+<form action="/save-date.php" method="POST">
+  <label>Select Date:</label>
+
+  <!-- 1. The visible target for the picker -->
+  <div id="nepali-picker-container" style="max-width: 300px;"></div>
+
+  <!-- 2. The hidden input your PHP script will receive -->
+  <input type="hidden" name="nepali_date" id="selected-bs-date" />
+
+  <button type="submit">Submit Form</button>
+</form>
 
 <script>
   const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
 
-  // Simple vanilla JS call
-  mountNepaliDatePicker("#nepali-datepicker", {
-    onChange: (date) => {
-      console.log("Selected Date:", date);
-      // Update a hidden input for form submission
-      if (date) {
-        document.getElementById("date_input").value = date.bs;
+  mountNepaliDatePicker("#nepali-picker-container", {
+    onChange: (result) => {
+      if (result) {
+        // Update hidden input with "YYYY-MM-DD"
+        document.getElementById("selected-bs-date").value = result.bs;
+        console.log("Selected AD Date:", result.ad);
+      } else {
+        document.getElementById("selected-bs-date").value = "";
       }
     },
-    theme: { primary: "#2563eb" },
+    theme: { primary: "#2563eb", radius: "8px" },
   });
 </script>
 ```
 
 ---
 
-## Option 2: Core PHP Helper (Server-Side)
+## ⚙️ Server-Side: Logic & Logic
 
-Use this if you need to convert dates directly in your PHP/Laravel backend.
+If you need to handle conversions on your server (e.g., converting stored BS dates to AD before saving to a SQL database), use the provided PHP helper class.
 
-### 1. Installation
+### 1. Setup
 
-Copy the `NepaliDateConverter.php` file from this directory into your project (e.g., `app/Helpers/` in Laravel).
+Copy [NepaliDateConverter.php](./NepaliDateConverter.php) to your project.
 
-### 2. Usage in PHP
+- **Plain PHP**: `require_once 'NepaliDateConverter.php';`
+- **Laravel**: Place it in `app/Helpers/` and ensure your `composer.json` autoloads it, or simply use namespacing.
 
-```php
-<?php
-require_once 'NepaliDateConverter.php';
+### 2. Method Reference
 
-// AD to BS
-$bs = NepaliDateConverter::adToBs(new DateTime('2024-01-15'));
-echo $bs['year'] . '-' . $bs['month'] . '-' . $bs['day']; // 2080-10-2
+| Method                 | Description       | Input                    | Output                                    |
+| :--------------------- | :---------------- | :----------------------- | :---------------------------------------- |
+| `adToBs($date)`        | English to Nepali | `DateTime` or `string`   | `['year'=>int, 'month'=>int, 'day'=>int]` |
+| `bsToAd($y, $m, $d)`   | Nepali to English | `int` year, month, day   | `DateTime` object                         |
+| `formatBs($array, $f)` | Format BS array   | `bsArray`, format string | `string` (e.g. "2081-10-07")              |
 
-// BS to AD
-$ad = NepaliDateConverter::bsToAd(2080, 10, 15);
-echo $ad->format('Y-m-d'); // 2024-01-29
-```
+### 3. Practical Laravel Storage Pattern
 
-### 3. Usage in Laravel Controller
+**Storing in Database (AD is better for sorting/indexing):**
 
 ```php
 use App\Helpers\NepaliDateConverter;
 
 public function store(Request $request) {
-    $bsDate = $request->input('nepali_date'); // e.g. "2080-10-15"
+    $bsDate = $request->input('nepali_date'); // "2081-10-07"
+
     if ($bsDate) {
         [$y, $m, $d] = explode('-', $bsDate);
-        // Store equivalent AD date
-        $adDate = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
-        $record->update(['date_ad' => $adDate]);
+
+        // Convert to standard PHP DateTime for database storage
+        $dateAD = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
+
+        // Save to your model
+        $event = new Event();
+        $event->event_date_ad = $dateAD;
+        $event->save();
     }
 }
 ```
 
-## Supported Date Range
+---
 
-- **BS**: 2000 to 2099
-- **AD**: 1943 to 2043
+## 🏗️ Laravel Best Practice: Blade Component
+
+Create a reusable Blade component for the date picker.
+
+**1. Create `resources/views/components/nepali-datepicker.blade.php`:**
+
+```html
+@props(['name', 'value' => ''])
+
+<div class="nepali-datepicker-wrapper">
+  <div id="picker-{{ $name }}"></div>
+  <input
+    type="hidden"
+    name="{{ $name }}"
+    id="input-{{ $name }}"
+    value="{{ $value }}"
+  />
+</div>
+
+@push('scripts')
+<script>
+  window.addEventListener("load", () => {
+    window.NepaliDatePickerConverter.mountNepaliDatePicker(
+      "#picker-{{ $name }}",
+      {
+        value: "{{ $value }}",
+        onChange: (res) => {
+          document.getElementById("input-{{ $name }}").value = res
+            ? res.bs
+            : "";
+        },
+      }
+    );
+  });
+</script>
+@endpush
+```
+
+**2. Use it in your forms:**
+
+```html
+<x-nepali-datepicker name="joining_date" value="2081-01-01" />
+```
+
+---
+
+## 🛠️ Complete Single-File Demo
+
+```php
+<?php
+require_once 'NepaliDateConverter.php';
+$sampleBS = "2081-05-15";
+[$y, $m, $d] = explode('-', $sampleBS);
+$ad = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PHP Nepali Date Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.css">
+</head>
+<body>
+    <h1>Nepali Date Integration</h1>
+
+    <p>Server-side check: <b><?php echo $sampleBS; ?></b> is <b><?php echo $ad->format('M d, Y'); ?></b></p>
+
+    <div id="picker"></div>
+    <script>
+        window.NepaliDatePickerConverter.mountNepaliDatePicker("#picker", {
+            onChange: (res) => console.log(res)
+        });
+    </script>
+</body>
+</html>
+```
