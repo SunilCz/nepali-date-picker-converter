@@ -47,3 +47,15 @@ export interface Theme {
   /** Background color for the input field */
   inputBg?: string;
 }
+
+export interface NepaliDatePickerProps {
+  onChange?: (result: DatePickerResult | null) => void;
+  theme?: Theme;
+  value?: string;
+  dateLan?: LanguageCode;
+  monthLan?: LanguageCode;
+  dayLan?: LanguageCode;
+  yearLan?: LanguageCode;
+  language?: LanguageCode;
+  showLanguageSwitcher?: boolean;
+}

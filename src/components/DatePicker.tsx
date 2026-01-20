@@ -8,19 +8,8 @@ import {
 } from '../core/metadata';
 import { toNepaliNumeral } from '../utils/formatter';
 import './styles.css';
-import { DatePickerResult, LanguageCode, Theme } from '../core/types';
+import { DatePickerResult, LanguageCode, Theme, NepaliDatePickerProps } from '../core/types';
 
-export interface NepaliDatePickerProps {
-    onChange?: (result: DatePickerResult | null) => void;
-    theme?: Theme;
-    value?: string;
-    dateLan?: LanguageCode;
-    monthLan?: LanguageCode;
-    dayLan?: LanguageCode;
-    yearLan?: LanguageCode;
-    language?: LanguageCode;
-    showLanguageSwitcher?: boolean;
-}
 
 export const NepaliDatePicker = ({
     onChange,
@@ -36,6 +25,10 @@ export const NepaliDatePicker = ({
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
     const [selectedDate, setSelectedDate] = useState<string>(value || "");
+
+    useEffect(() => {
+        setCurrentLanguage(language);
+    }, [language]);
     const [activeDropdown, setActiveDropdown] = useState<'m' | 'y' | null>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
 

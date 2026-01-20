@@ -11,11 +11,11 @@ export * from "./core/types";
 export { NepaliDate } from "./core/NepaliDate";
 export * from "./utils/formatter";
 export { NepaliDatePicker } from "./components/DatePicker";
-export type { NepaliDatePickerProps } from "./components/DatePicker";
+export type { NepaliDatePickerProps } from "./core/types";
 export { mountNepaliDatePicker } from "./utils/mount";
 
 // Meta
-export const VERSION = "0.1.16";
+export const VERSION = "0.1.17";
 export const NAME = "nepali-date-picker-converter";
 
 // Default Export
