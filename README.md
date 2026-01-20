@@ -37,7 +37,7 @@ You can use the library directly in your HTML files.
 #### Core Logic Only (**React-Free**, 16KB)
 
 ```html
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.umd.js"></script>
 ```
 
 #### Full UI Component (Requires React)
@@ -48,10 +48,10 @@ You can use the library directly in your HTML files.
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- Library & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.css"
 />
 ```
 
@@ -182,6 +182,29 @@ interface NepaliDatePickerProps {
 }
 ```
 
+### ⚡ Reactivity & Auto-Sync (New)
+
+The `NepaliDatePicker` is now reactive to its `value` prop. You can easily sync it with a standard English (AD) calendar:
+
+```tsx
+const [bsValue, setBsValue] = useState("2082-01-01");
+
+const handleADChange = (e) => {
+  const adDate = new Date(e.target.value);
+  const bs = adToBs(adDate);
+  setBsValue(
+    `${bs.year}-${String(bs.month).padStart(2, "0")}-${String(bs.day).padStart(2, "0")}`,
+  );
+};
+
+return (
+  <>
+    <input type="date" onChange={handleADChange} />
+    <NepaliDatePicker value={bsValue} />
+  </>
+);
+```
+
 ### 🌐 Multi-Language Support (New)
 
 The picker now supports an interactive language switcher and global language defaults.
@@ -216,7 +239,7 @@ mountNepaliDatePicker("#root", {
   import {
     adToBs,
     bsToAd,
-  } from "https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/index.mjs";
+  } from "https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/index.mjs";
   const bsDate = adToBs(new Date());
   console.log(bsDate);
 </script>

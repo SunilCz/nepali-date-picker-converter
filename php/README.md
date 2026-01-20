@@ -13,20 +13,11 @@ Comprehensive guide for integrating Nepali date features (UI and logic) into PHP
 
 This method uses the library's JavaScript UMD bundle to mount the React-based date picker onto any standard HTML element. **No React knowledge is required.**
 
-### 1. Unified Setup (v0.1.12)
-
-Include these tags in your layout file (e.g., `app.blade.php` or `header.php`):
-
-```html
-<!-- Dependencies -->
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-<!-- Nepali Date Picker & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.js"></script>
+<!-- Nepali Date Picker & Styles (v0.1.13) -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.12/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.css"
 />
 ```
 
@@ -87,7 +78,7 @@ mountNepaliDatePicker("#picker", {
 
 ## ⚙️ Server-Side: Logic & Logic
 
-If you need to handle conversions on your server (e.g., converting stored BS dates to AD before saving to a SQL database), use the provided PHP helper class.
+If you need to handle conversions on your server (e.g., converting stored BS dates to AD before saving to a SQL database), use the provided PHP helper class. It now includes the **full 100-year calendar data (2000-2099 BS)**.
 
 ### 1. Setup
 
@@ -191,8 +182,8 @@ $ad = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
     <title>PHP Nepali Date Demo</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.css">
+    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.13/dist/bundle.react.umd.css">
 </head>
 <body>
     <h1>Nepali Date Integration</h1>

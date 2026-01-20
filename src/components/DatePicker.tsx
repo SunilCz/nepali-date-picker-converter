@@ -50,6 +50,16 @@ export const NepaliDatePicker = ({
     });
 
     useEffect(() => {
+        if (value && value !== selectedDate) {
+            setSelectedDate(value);
+            if (value.includes('-')) {
+                const [y, m] = value.split('-').map(Number);
+                setView({ y, m: m - 1 });
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
         const handleClick = (e: MouseEvent) => {
             if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
                 setIsOpen(false);

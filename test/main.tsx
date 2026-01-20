@@ -202,7 +202,7 @@ const ConverterExample = () => {
   );
 };
 
-// Date Picker Component
+// Date Picker Example
 const DatePickerExample = () => {
   const [selectedDate, setSelectedDate] = useState<any>(null);
 
@@ -249,6 +249,54 @@ const DatePickerExample = () => {
   );
 };
 
+// Sync Demo Component
+const SyncDemoExample = () => {
+    const [bsValue, setBsValue] = useState("2082-01-01");
+    const [lastResult, setLastResult] = useState<any>(null);
+
+    const handleEnglishChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const adDate = new Date(e.target.value);
+        if (!isNaN(adDate.getTime())) {
+            const bs = adToBs(adDate); 
+            const bsStr = `${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.day).padStart(2, '0')}`;
+            setBsValue(bsStr);
+        }
+    };
+
+    return (
+        <div style={{ padding: '10px' }}>
+            <div style={{ marginBottom: '20px', padding: '15px', background: '#fff7ed', borderRadius: '10px', border: '1px solid #ffedd5' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>1. Standard English Input (AD)</label>
+                <input 
+                    type="date" 
+                    onChange={handleEnglishChange} 
+                    style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ddd', width: '200px' }}
+                />
+                <p style={{ fontSize: '12px', color: '#9a3412', marginTop: '5px' }}>Selecting a date here will automatically update the Nepali Picker below.</p>
+            </div>
+
+            <div style={{ padding: '15px', background: '#f0f9ff', borderRadius: '10px', border: '1px solid #e0f2fe' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>2. Nepali Date Picker (Synced)</label>
+                <NepaliDatePicker 
+                    value={bsValue} 
+                    onChange={(res) => {
+                        if (res) {
+                            setBsValue(res.bs);
+                            setLastResult(res);
+                        }
+                    }} 
+                />
+            </div>
+
+            {lastResult && (
+                <div style={{ marginTop: '15px', fontSize: '14px' }}>
+                    <b>Synced Result:</b> {lastResult.bs} ({lastResult.nepali})
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Main App Component
 const App = () => {
   return (
@@ -256,6 +304,15 @@ const App = () => {
       {/* Search for Language Switcher Section */}
       <div className="test-section" style={{ background: '#f0fdf4', borderLeftColor: '#10b981' }}>
         <LanguageSwitcherDemo />
+      </div>
+
+      {/* Sync Demo Section */}
+      <div className="test-section" style={{ background: '#f8fafc', borderLeftColor: '#2563eb' }}>
+        <h2>🔗 AD ↔ BS Synchronization</h2>
+        <p style={{ color: '#64748b', marginBottom: '15px' }}>
+            This demo shows how you can link a standard HTML date input to the NepaliDatePicker.
+        </p>
+        <SyncDemoExample />
       </div>
 
       {/* Date Picker Section */}
