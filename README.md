@@ -169,6 +169,17 @@ mountNepaliDatePicker("#root", {
 });
 ```
 
+#### `picker.setValue(bsDateString: string)`
+
+Updates the picker selection programmatically. Useful for two-way synchronization with other inputs.
+
+**Example:**
+
+```javascript
+const picker = mountNepaliDatePicker("#picker");
+picker.setValue("2081-10-15");
+```
+
 ### React Component Props
 
 ```typescript

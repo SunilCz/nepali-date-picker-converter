@@ -69,8 +69,30 @@ mountNepaliDatePicker("#picker", {
   showLanguageSwitcher: true,
 
   // Optional: individual control
-  dateLan: "np",
   monthLan: "np",
+});
+```
+
+### 4. Two-Way Synchronization (New)
+
+You can now keep an English date input and the Nepali picker in sync using the `setValue` method and `adToBs` converter.
+
+```javascript
+const adInput = document.getElementById("ad-input");
+const { mountNepaliDatePicker, adToBs } = window.NepaliDatePickerConverter;
+
+const picker = mountNepaliDatePicker("#picker", {
+  onChange: (res) => {
+    if (res) adInput.value = res.ad.toISOString().split("T")[0];
+  },
+});
+
+adInput.addEventListener("change", (e) => {
+  const bs = adToBs(new Date(e.target.value));
+  const bsStr = `${bs.year}-${String(bs.month).padStart(2, "0")}-${String(bs.day).padStart(2, "0")}`;
+
+  // 🔥 Update the picker programmatically
+  picker.setValue(bsStr);
 });
 ```
 
