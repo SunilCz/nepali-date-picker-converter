@@ -32,7 +32,7 @@ export default [
   },
   // 2. React Bundle (Requires React)
   {
-    input: "src/react.ts",
+    input: "src/index.ts",
     external: ["react", "react-dom"],
     output: [
       {

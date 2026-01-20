@@ -1,42 +1,29 @@
-// 1. Import everything first
-import { adToBs, bsToAd, formatBs, formatAd } from "./core/converter";
+// Core Logic
+import * as converter from "./core/converter";
 import { NepaliDate } from "./core/NepaliDate";
-import { NepaliDatePicker, NepaliDatePickerProps } from "./components/DatePicker";
+import { NepaliDatePicker } from "./components/DatePicker";
 import { mountNepaliDatePicker } from "./utils/mount";
-import { toNepaliNumeral, toEnglishNumeral } from "./utils/formatter";
+import * as formatter from "./utils/formatter";
 
-// 2. Named Exports (Always recommended)
-export {
-  adToBs,
-  bsToAd,
-  NepaliDate,
-  NepaliDatePicker,
-  NepaliDatePickerProps,
-  mountNepaliDatePicker,
-  formatBs,
-  formatAd,
-  toNepaliNumeral,
-  toEnglishNumeral
-};
-
+// Named Exports
+export * from "./core/converter";
 export * from "./core/types";
+export { NepaliDate } from "./core/NepaliDate";
+export * from "./utils/formatter";
+export { NepaliDatePicker, NepaliDatePickerProps } from "./components/DatePicker";
+export { mountNepaliDatePicker } from "./utils/mount";
 
-export const VERSION = "0.1.7";
+// Meta
+export const VERSION = "0.1.9";
 export const NAME = "nepali-date-picker-converter";
 
-// 3. Default Export (For convenience)
-const NepaliDatePickerConverter = {
-  adToBs,
-  bsToAd,
-  NepaliDate,
-  NepaliDatePicker,
-  mountNepaliDatePicker,
-  formatBs,
-  formatAd,
-  toNepaliNumeral,
-  toEnglishNumeral,
-  VERSION,
-  NAME
+// Default Export
+export default {
+    ...converter,
+    ...formatter,
+    NepaliDate,
+    NepaliDatePicker,
+    mountNepaliDatePicker,
+    VERSION,
+    NAME
 };
-
-export default NepaliDatePickerConverter;
