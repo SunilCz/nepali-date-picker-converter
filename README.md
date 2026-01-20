@@ -37,7 +37,7 @@ You can use the library directly in your HTML files.
 #### Core Logic Only (**React-Free**, 16KB)
 
 ```html
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.umd.js"></script>
 ```
 
 #### Full UI Component (Requires React)
@@ -48,10 +48,10 @@ You can use the library directly in your HTML files.
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- Library & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/bundle.react.umd.css"
 />
 ```
 
@@ -84,7 +84,10 @@ Use the `mountNepaliDatePicker` helper to embed the UI component without writing
   const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
 
   mountNepaliDatePicker("#datepicker", {
-    onChange: (date) => console.log("Selected:", date),
+    onChange: (result) => {
+      console.log("Selected Object:", result);
+      // result.bsDate => { year, month, day }
+    },
     theme: { primary: "#2563eb" },
   });
 </script>
@@ -94,15 +97,25 @@ Use the `mountNepaliDatePicker` helper to embed the UI component without writing
 
 ```tsx
 import React, { useState } from "react";
-import { NepaliDatePicker } from "nepali-date-picker-converter";
+import { NepaliDatePicker, bsToAd } from "nepali-date-picker-converter";
 import "nepali-date-picker-converter/dist/bundle.react.umd.css";
 
 function App() {
-  const [date, setDate] = useState(null);
+  const [adDate, setAdDate] = useState("");
+
+  const handleDateChange = (result) => {
+    if (!result) return;
+
+    // Use the convenient bsDate object for conversion
+    const { year, month, day } = result.bsDate;
+    const ad = bsToAd(year, month, day);
+
+    setAdDate(ad.toDateString());
+  };
 
   return (
     <NepaliDatePicker
-      onChange={(result) => setDate(result)}
+      onChange={handleDateChange}
       theme={{ primary: "#2563eb" }}
     />
   );
@@ -184,7 +197,7 @@ interface NepaliDatePickerProps {
   import {
     adToBs,
     bsToAd,
-  } from "https://unpkg.com/nepali-date-picker-converter@0.1.4/dist/index.js";
+  } from "https://unpkg.com/nepali-date-picker-converter@0.1.9/dist/index.mjs";
   const bsDate = adToBs(new Date());
   console.log(bsDate);
 </script>
