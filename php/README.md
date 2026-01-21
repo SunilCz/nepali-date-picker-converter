@@ -13,6 +13,13 @@ Comprehensive guide for integrating Nepali date features (UI and logic) into PHP
 
 This method uses the library's JavaScript UMD bundle to mount the React-based date picker onto any standard HTML element. **No React knowledge is required.**
 
+### 1. Load Dependencies in your HTML
+
+```html
+<!-- React Dependencies (Required) -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
 <!-- Nepali Date Picker & Styles (v0.1.20) -->
 <script src="https://unpkg.com/nepali-date-picker-converter@0.1.20/dist/bundle.react.umd.js"></script>
 <link
@@ -98,7 +105,7 @@ adInput.addEventListener("change", (e) => {
 
 ---
 
-## ⚙️ Server-Side: Logic & Logic
+## ⚙️ Server-Side: Logic & Conversion
 
 If you need to handle conversions on your server (e.g., converting stored BS dates to AD before saving to a SQL database), use the provided PHP helper class. It now includes the **full 100-year calendar data (2000-2099 BS)**.
 
