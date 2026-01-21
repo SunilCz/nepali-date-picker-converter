@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Switcher Debug</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="./dist/bundle.react.umd.js"></script>
+    <link rel="stylesheet" href="./dist/bundle.react.umd.css">
+</head>
+<body>
+    <div id="picker" style="margin: 50px;"></div>
+    <script>
+        const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
+        mountNepaliDatePicker("#picker", {
+            showLanguageSwitcher: true,
+            language: 'en'
+        });
+    </script>
+</body>
+</html>

@@ -25,9 +25,13 @@ export const NepaliDatePicker = ({
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
     const [selectedDate, setSelectedDate] = useState<string>(value || "");
+    const prevLanguageProp = useRef<LanguageCode>(language);
 
     useEffect(() => {
-        setCurrentLanguage(language);
+        if (prevLanguageProp.current !== language) {
+            setCurrentLanguage(language);
+            prevLanguageProp.current = language;
+        }
     }, [language]);
     const [activeDropdown, setActiveDropdown] = useState<'m' | 'y' | null>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
