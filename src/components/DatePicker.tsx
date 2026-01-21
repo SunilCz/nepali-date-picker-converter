@@ -173,6 +173,7 @@ export const NepaliDatePicker = ({
                         {/* Language Switcher */}
                         {showLanguageSwitcher && (
                             <button 
+                                type="button"
                                 className="nck-lang-switcher" 
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -204,10 +205,10 @@ export const NepaliDatePicker = ({
                     </div>
 
                     <div className="nck-footer">
-                        <button className="nck-footer-btn nck-btn-today" onClick={handleToday}>
+                        <button type="button" className="nck-footer-btn nck-btn-today" onClick={handleToday}>
                             {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? 'आज' : 'Today'}
                         </button>
-                        <button className="nck-footer-btn nck-btn-clear" onClick={handleClear}>
+                        <button type="button" className="nck-footer-btn nck-btn-clear" onClick={handleClear}>
                             {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? 'रद्द' : 'Clear'}
                         </button>
                     </div>
