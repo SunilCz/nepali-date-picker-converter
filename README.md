@@ -5,6 +5,8 @@ A comprehensive library for converting between Nepali (Bikram Sambat) and Englis
 [![npm version](https://img.shields.io/npm/v/nepali-date-picker-converter.svg)](https://www.npmjs.com/package/nepali-date-picker-converter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**[🚀 Live Demo](https://sunilcz.github.io/nepali-date-picker-converter-example/)** | [Documentation](#-quick-start) | [NPM Package](https://www.npmjs.com/package/nepali-date-picker-converter)
+
 ## ✨ Features
 
 - 🔄 **Bidirectional Conversion** - Convert between Nepali (BS) and English (AD) dates
