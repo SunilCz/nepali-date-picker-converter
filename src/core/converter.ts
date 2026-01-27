@@ -150,24 +150,38 @@ export function formatBs(
   displayMonth: DisplayType = "numeric",
   displayDay: DisplayType = "numeric"
 ): string {
-  const y = convertToNepaliNumber(date.year); // convert year to Nepali digits
+  // ISO-like data formats always use ASCII digits
+  const isDataFormat = ["YYYY-MM-DD", "DD-MM-YYYY", "DD/MM/YYYY", "YYYY/MM/DD"].includes(format);
+
+  if (isDataFormat) {
+    const y = date.year.toString();
+    const m = date.month.toString().padStart(2, "0");
+    const d = date.day.toString().padStart(2, "0");
+
+    switch (format) {
+      case "DD-MM-YYYY":
+        return `${d}-${m}-${y}`;
+      case "DD/MM/YYYY":
+        return `${d}/${m}/${y}`;
+      case "YYYY/MM/DD":
+        return `${y}/${m}/${d}`;
+      default:
+        return `${y}-${m}-${d}`;
+    }
+  }
+
+  // Custom formats can use Nepali numerals if requested
+  const y = convertToNepaliNumber(date.year);
   const monthName = getNepaliMonth(date.month, displayMonth);
   const dayName = getNepaliDayName(date, displayDay);
 
-  let m =
-    displayMonth === "numeric" ? convertToNepaliNumber(date.month) : monthName;
+  let m = displayMonth === "numeric" ? convertToNepaliNumber(date.month) : monthName;
   let d = displayDay === "numeric" ? convertToNepaliNumber(date.day) : dayName;
 
-  switch (format) {
-    case "DD-MM-YYYY":
-      return `${d}-${m}-${y}`;
-    case "DD/MM/YYYY":
-      return `${d}/${m}/${y}`;
-    case "YYYY/MM/DD":
-      return `${y}/${m}/${d}`;
-    default:
-      return `${y}-${m}-${d}`;
-  }
+  return format
+    .replace("YYYY", y)
+    .replace("MM", m)
+    .replace("DD", d);
 }
 
 /** Convert 1,2,3.. to Nepali digits १,२,३.. */

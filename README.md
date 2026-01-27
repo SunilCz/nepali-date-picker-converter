@@ -39,7 +39,7 @@ You can use the library directly in your HTML files.
 #### Core Logic Only (**React-Free**, 16KB)
 
 ```html
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.umd.js"></script>
 ```
 
 #### Full UI Component (Requires React)
@@ -50,10 +50,10 @@ You can use the library directly in your HTML files.
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- Library & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.css"
 />
 ```
 
@@ -109,6 +109,8 @@ function App() {
     if (!val) return;
 
     // val is a complex object with methods
+    // NOTE: val.format("YYYY-MM-DD") always returns ASCII digits (e.g. "2082-10-15")
+    // for compatibility with APIs and databases.
     console.log("BS Date:", val.format("YYYY-MM-DD"));
     console.log("AD Date:", val.toAD());
 
@@ -190,7 +192,10 @@ picker.setValue("2081-10-15");
 
 ```typescript
 interface NepaliDatePickerProps {
-  /** Callback when date is selected. Returns complex NepaliDate object. */
+  /**
+   * Callback when date is selected. Returns complex NepaliDate object.
+   * Both value.bs and value.format("YYYY-MM-DD") are guaranteed to be ASCII strings.
+   */
   onChange?: (
     value: NepaliDate | null,
     result: DatePickerResult | null,

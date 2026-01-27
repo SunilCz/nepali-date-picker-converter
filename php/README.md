@@ -20,11 +20,11 @@ This method uses the library's JavaScript UMD bundle to mount the React-based da
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-<!-- Nepali Date Picker & Styles (v0.1.27) -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.js"></script>
+<!-- Nepali Date Picker & Styles (v0.1.28) -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.css"
 />
 ```
 
@@ -57,7 +57,8 @@ To send the selected date back to your PHP backend, use a **hidden input** that 
 
     onChange: (result) => {
       if (result) {
-        // result is now a rich object (val) with format() method
+        // result.bs is always an ASCII string (e.g. "2082-10-15")
+        // making it safe for database storage and back-end logic.
         document.getElementById("selected-bs-date").value = result.bs;
       }
     },
@@ -212,8 +213,8 @@ $ad = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
     <title>PHP Nepali Date Demo</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.27/dist/bundle.react.umd.css">
+    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.28/dist/bundle.react.umd.css">
 </head>
 <body>
     <h1>Nepali Date Integration</h1>

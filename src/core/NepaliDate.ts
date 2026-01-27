@@ -1,5 +1,6 @@
 import { adToBs, bsToAd, formatBs } from "./converter";
 import { BSDate, DateFormat, DisplayType } from "./types";
+import { toNepaliNumeral } from "../utils/formatter";
 
 export class NepaliDate {
   public bs: string;
@@ -28,7 +29,7 @@ export class NepaliDate {
     this.bsDate = { ...this._bs };
     this.ad = bsToAd(this._bs.year, this._bs.month, this._bs.day);
     this.bs = `${this._bs.year}-${String(this._bs.month).padStart(2, "0")}-${String(this._bs.day).padStart(2, "0")}`;
-    this.nepali = this.format("YYYY-MM-DD"); // This uses the formatter
+    this.nepali = toNepaliNumeral(this.bs); 
   }
 
   private get _bs(): BSDate {
