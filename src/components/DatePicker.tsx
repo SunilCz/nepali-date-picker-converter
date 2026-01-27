@@ -72,7 +72,10 @@ export const NepaliDatePicker = ({
         const val = getInitialValue(valueProp);
         if (val && val.includes('-')) {
             const [y, m] = val.split('-').map(Number);
-            return { y, m: m - 1 };
+            if (!Number.isNaN(y) && !Number.isNaN(m) && m >= 1 && m <= 12 &&
+                y >= NP_INITIAL_YEAR && y < NP_INITIAL_YEAR + NP_MONTHS_DATA.length) {
+                return { y, m: m - 1 };
+            }
         }
         return { y: todayBS.year, m: todayBS.month - 1 };
     });
@@ -83,7 +86,10 @@ export const NepaliDatePicker = ({
             setSelectedDate(val);
             if (val.includes('-')) {
                 const [y, m] = val.split('-').map(Number);
-                setView({ y, m: m - 1 });
+                if (!Number.isNaN(y) && !Number.isNaN(m) && m >= 1 && m <= 12 &&
+                    y >= NP_INITIAL_YEAR && y < NP_INITIAL_YEAR + NP_MONTHS_DATA.length) {
+                    setView({ y, m: m - 1 });
+                }
             }
         }
     }, [valueProp]);
@@ -113,12 +119,12 @@ export const NepaliDatePicker = ({
     const availableYears = useMemo(() => {
         let years = NP_MONTHS_DATA.map((_, i) => NP_INITIAL_YEAR + i);
         if (maxDateStr) {
-            const maxY = parseInt(maxDateStr.split('-')[0]);
-            years = years.filter(y => y <= maxY);
+            const maxY = parseInt(maxDateStr.split('-')[0], 10);
+            if (!Number.isNaN(maxY)) years = years.filter(y => y <= maxY);
         }
         if (minDateStr) {
-            const minY = parseInt(minDateStr.split('-')[0]);
-            years = years.filter(y => y >= minY);
+            const minY = parseInt(minDateStr.split('-')[0], 10);
+            if (!Number.isNaN(minY)) years = years.filter(y => y >= minY);
         }
         return years;
     }, [maxDateStr, minDateStr]);

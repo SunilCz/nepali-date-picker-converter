@@ -14,7 +14,12 @@ export class NepaliDate {
       this._bs = adToBs(date);
     } else if (typeof date === "string") {
       const [y, m, d] = date.split(/[-/]/).map(Number);
-      this._bs = { year: y, month: m, day: d };
+      if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d) ||
+          m < 1 || m > 12 || d < 1 || d > 32) {
+        this._bs = adToBs(new Date()); // fallback to today
+      } else {
+        this._bs = { year: y, month: m, day: d };
+      }
     } else {
       this._bs = date;
     }
