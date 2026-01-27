@@ -30,16 +30,21 @@ export const NepaliDatePicker = ({
 }: NepaliDatePickerProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
+    const [isMounted, setIsMounted] = useState(false);
     
     // Normalize value from prop
-    const getInitialValue = (val: string | NepaliDate | undefined): string => {
+    const getInitialValue = (val: string | any | undefined): string => {
         if (!val) return "";
         if (typeof val === 'string') return val;
-        return val.format("YYYY-MM-DD");
+        return typeof val.format === 'function' ? val.format("YYYY-MM-DD") : "";
     };
 
     const [selectedDate, setSelectedDate] = useState<string>(getInitialValue(valueProp));
     const prevLanguageProp = useRef<LanguageCode>(language);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Parse max and min for comparison
     const maxDateStr = useMemo(() => max ? (typeof max === 'string' ? max : max.format("YYYY-MM-DD")) : null, [max]);
@@ -54,7 +59,14 @@ export const NepaliDatePicker = ({
     const [activeDropdown, setActiveDropdown] = useState<'m' | 'y' | null>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
 
-    const todayBS = useMemo(() => adToBs(new Date()), []);
+    const todayBS = useMemo(() => {
+        try {
+            return adToBs(new Date());
+        } catch (e) {
+            // Fallback to a safe middle-range date if system clock is out of range
+            return { year: 2081, month: 1, day: 1 };
+        }
+    }, []);
 
     const [view, setView] = useState<{ y: number; m: number }>(() => {
         const val = getInitialValue(valueProp);
@@ -112,11 +124,24 @@ export const NepaliDatePicker = ({
     }, [maxDateStr, minDateStr]);
 
     const monthDays = useMemo(() => {
-        const yearData = NP_MONTHS_DATA[view.y - NP_INITIAL_YEAR];
+        const yearIndex = view.y - NP_INITIAL_YEAR;
+        const yearData = (yearIndex >= 0 && yearIndex < NP_MONTHS_DATA.length) 
+            ? NP_MONTHS_DATA[yearIndex] 
+            : null;
         return yearData ? yearData[0][view.m] : 30;
     }, [view.y, view.m]);
 
-    const startDayOfWeek = useMemo(() => bsToAd(view.y, view.m + 1, 1).getDay(), [view.y, view.m]);
+    const startDayOfWeek = useMemo(() => {
+        const yearIndex = view.y - NP_INITIAL_YEAR;
+        if (yearIndex >= 0 && yearIndex < NP_MONTHS_DATA.length && view.m >= 0 && view.m < 12) {
+            try {
+                return bsToAd(view.y, view.m + 1, 1).getDay();
+            } catch (e) {
+                return 0;
+            }
+        }
+        return 0;
+    }, [view.y, view.m]);
 
     const isDateDisabled = (year: number, month: number, day: number) => {
         const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -161,6 +186,8 @@ export const NepaliDatePicker = ({
         const nepaliDate = new NepaliDate(result.bsDate);
         onChange?.(nepaliDate, result);
     };
+
+    if (!isMounted) return null;
 
     return (
         <div className="nck-wrapper" style={dynamicStyle} ref={pickerRef}>

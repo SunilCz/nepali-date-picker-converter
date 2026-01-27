@@ -92,8 +92,8 @@ export function bsToAd(
     bsYear = parts[0];
     bsMonth = parts[1];
     bsDay = parts[2];
-  } else if (typeof yearOrStr === "object" && "toBS" in yearOrStr) {
-    const bs = yearOrStr.toBS();
+  } else if (yearOrStr !== null && typeof yearOrStr === "object" && "toBS" in (yearOrStr as any)) {
+    const bs = (yearOrStr as any).toBS();
     bsYear = bs.year;
     bsMonth = bs.month;
     bsDay = bs.day;
@@ -104,9 +104,10 @@ export function bsToAd(
   }
 
   const yearIndex = bsYear - NP_INITIAL_YEAR;
+  const yearData = NP_MONTHS_DATA[yearIndex];
 
-  if (!NP_MONTHS_DATA[yearIndex]) {
-    throw new Error("BS year out of supported range");
+  if (!yearData) {
+    throw new Error(`BS year ${bsYear} is out of supported range (${NP_INITIAL_YEAR} - ${NP_INITIAL_YEAR + NP_MONTHS_DATA.length - 1})`);
   }
 
   let totalDays = 0;
@@ -115,7 +116,11 @@ export function bsToAd(
     totalDays += NP_MONTHS_DATA[y][0].reduce((a, b) => a + b, 0);
   }
 
-  const months = NP_MONTHS_DATA[yearIndex][0];
+  const months = yearData[0];
+  
+  if (bsMonth < 1 || bsMonth > 12) {
+      throw new Error("BS month must be between 1 and 12");
+  }
 
   for (let m = 0; m < bsMonth - 1; m++) {
     totalDays += months[m];
