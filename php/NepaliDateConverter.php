@@ -78,14 +78,26 @@ class NepaliDateConverter
 
     /**
      * Convert Nepali (BS) date to English (AD) date
+     * Accepts (year, month, day) OR (dateString)
      * 
-     * @param int $bsYear Nepali year
-     * @param int $bsMonth Nepali month (1-12)
-     * @param int $bsDay Nepali day
+     * @param int|string $yearOrStr Nepali year or full date string (YYYY-MM-DD)
+     * @param int|null $bsMonth Nepali month (1-12)
+     * @param int|null $bsDay Nepali day
      * @return DateTime English date as DateTime object
      */
-    public static function bsToAd(int $bsYear, int $bsMonth, int $bsDay): DateTime
+    public static function bsToAd($yearOrStr, $bsMonth = null, $bsDay = null): DateTime
     {
+        if (is_string($yearOrStr)) {
+            $parts = preg_split('/[-|\/]/', $yearOrStr);
+            $bsYear = (int) $parts[0];
+            $bsMonth = (int) $parts[1];
+            $bsDay = (int) $parts[2];
+        } else {
+            $bsYear = (int) $yearOrStr;
+            $bsMonth = (int) $bsMonth;
+            $bsDay = (int) $bsDay;
+        }
+
         $yearIndex = $bsYear - self::NP_INITIAL_YEAR;
         $yearData = self::getNepaliMonthsData();
 

@@ -20,11 +20,11 @@ This method uses the library's JavaScript UMD bundle to mount the React-based da
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-<!-- Nepali Date Picker & Styles (v0.1.22) -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.22/dist/bundle.react.umd.js"></script>
+<!-- Nepali Date Picker & Styles (v0.1.24) -->
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.24/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.22/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.24/dist/bundle.react.umd.css"
 />
 ```
 
@@ -49,13 +49,16 @@ To send the selected date back to your PHP backend, use a **hidden input** that 
   const { mountNepaliDatePicker } = window.NepaliDatePickerConverter;
 
   mountNepaliDatePicker("#nepali-picker-container", {
+    // 🔥 New features in 0.1.24
+    inputClassName: "form-control", // Add Bootstrap classes directly
+    placeholder: "Select Date BS",
+    max: "2082-12-30", // Disable future dates
+    min: "2080-01-01", // Disable past dates
+
     onChange: (result) => {
       if (result) {
-        // Update hidden input with "YYYY-MM-DD"
+        // result is now a rich object (val) with format() method
         document.getElementById("selected-bs-date").value = result.bs;
-        console.log("Selected AD Date:", result.ad);
-      } else {
-        document.getElementById("selected-bs-date").value = "";
       }
     },
     theme: { primary: "#2563eb", radius: "8px" },
@@ -118,11 +121,11 @@ Copy [NepaliDateConverter.php](./NepaliDateConverter.php) to your project.
 
 ### 2. Method Reference
 
-| Method                 | Description       | Input                    | Output                                    |
-| :--------------------- | :---------------- | :----------------------- | :---------------------------------------- |
-| `adToBs($date)`        | English to Nepali | `DateTime` or `string`   | `['year'=>int, 'month'=>int, 'day'=>int]` |
-| `bsToAd($y, $m, $d)`   | Nepali to English | `int` year, month, day   | `DateTime` object                         |
-| `formatBs($array, $f)` | Format BS array   | `bsArray`, format string | `string` (e.g. "2081-10-07")              |
+| Method                    | Description       | Input                       | Output                                    |
+| :------------------------ | :---------------- | :-------------------------- | :---------------------------------------- |
+| `adToBs($date)`           | English to Nepali | `DateTime` or `string`      | `['year'=>int, 'month'=>int, 'day'=>int]` |
+| `bsToAd($yOrStr, $m, $d)` | Nepali to English | `int` year OR `string` date | `DateTime` object                         |
+| `formatBs($array, $f)`    | Format BS array   | `bsArray`, format string    | `string` (e.g. "2081-10-07")              |
 
 ### 3. Practical Laravel Storage Pattern
 
@@ -135,10 +138,8 @@ public function store(Request $request) {
     $bsDate = $request->input('nepali_date'); // "2081-10-07"
 
     if ($bsDate) {
-        [$y, $m, $d] = explode('-', $bsDate);
-
-        // Convert to standard PHP DateTime for database storage
-        $dateAD = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
+        // 🔥 New in 0.1.24: Pass the whole string directly
+        $dateAD = NepaliDateConverter::bsToAd($bsDate);
 
         // Save to your model
         $event = new Event();
@@ -211,8 +212,8 @@ $ad = NepaliDateConverter::bsToAd((int)$y, (int)$m, (int)$d);
     <title>PHP Nepali Date Demo</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.22/dist/bundle.react.umd.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.22/dist/bundle.react.umd.css">
+    <script src="https://unpkg.com/nepali-date-picker-converter@0.1.24/dist/bundle.react.umd.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nepali-date-picker-converter@0.1.24/dist/bundle.react.umd.css">
 </head>
 <body>
     <h1>Nepali Date Integration</h1>
