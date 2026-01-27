@@ -16,7 +16,7 @@ A comprehensive library for converting between Nepali (Bikram Sambat) and Englis
 - 🌐 **Multi-Framework** - Works with React, Angular, PHP, Laravel, and vanilla JS
 - 🎨 **Customizable** - Theme support and styling options
 - 🇳🇵 **Nepali Support** - Nepali numerals and language support
-- 📊 **Accurate** - Supports dates from 2000 BS to 2099 BS (1943 AD to 2043 AD)
+- 📊 **Accurate** - Supports dates from 1970 BS to 2099 BS (1913 AD to 2043 AD)
 
 ## 📦 Installation
 

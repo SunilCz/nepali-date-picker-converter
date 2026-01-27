@@ -24,7 +24,7 @@ function normalizeToUtc(date: Date): Date {
  * Base reference:
  * 1943-04-14 AD (UTC midnight) === NP_INITIAL_YEAR-01-01 BS
  */
-const AD_REFERENCE = new Date(Date.UTC(1943, 3, 14));
+const AD_REFERENCE = new Date(Date.UTC(1913, 3, 13));
 
 /**
  * AD → BS Converter

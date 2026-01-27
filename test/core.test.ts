@@ -111,9 +111,13 @@ try {
 // Test 8: Edge cases
 console.log('\n8️⃣  Testing Edge Cases:');
 try {
-  // Test first day of Nepali calendar
-  const firstBS = bsToAd(2000, 1, 1);
-  console.log(`   First BS date (2000-01-01) = ${firstBS.toISOString().split('T')[0]} (AD)`);
+  // Test first day of Nepali calendar (1970-01-01)
+  const firstBS = bsToAd(1970, 1, 1);
+  console.log(`   First BS date (1970-01-01) = ${firstBS.toISOString().split('T')[0]} (AD)`);
+  
+  // Test previous epoch (2000-01-01)
+  const epoch2000 = bsToAd(2000, 1, 1);
+  console.log(`   2000-01-01 BS = ${epoch2000.toISOString().split('T')[0]} (AD)`);
   
   // Test today
   const today = new Date();
