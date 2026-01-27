@@ -58,6 +58,8 @@ export const NepaliDatePicker = ({
     }, [language]);
     const [activeDropdown, setActiveDropdown] = useState<'m' | 'y' | null>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
+    const yearOptionsRef = useRef<HTMLDivElement>(null);
+    const monthOptionsRef = useRef<HTMLDivElement>(null);
 
     const todayBS = useMemo(() => {
         try {
@@ -104,6 +106,23 @@ export const NepaliDatePicker = ({
         document.addEventListener("mousedown", handleClick);
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
+
+    // When year/month dropdown opens, scroll so current/selected year or month is in view
+    useEffect(() => {
+        if (!isOpen || !activeDropdown) return;
+        
+        // Use requestAnimationFrame for smoother timing
+        const frame = requestAnimationFrame(() => {
+            if (activeDropdown === 'y' && yearOptionsRef.current) {
+                const selected = yearOptionsRef.current.querySelector('.selected');
+                if (selected) selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+            } else if (activeDropdown === 'm' && monthOptionsRef.current) {
+                const selected = monthOptionsRef.current.querySelector('.selected');
+                if (selected) selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+            }
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [isOpen, activeDropdown, view.y, view.m]);
 
     const dynamicStyle = {
         '--nck-primary': theme?.primary || '#2563eb',
@@ -160,6 +179,7 @@ export const NepaliDatePicker = ({
         if (isDateDisabled(view.y, view.m + 1, day)) return;
         const dateStr = `${view.y}-${String(view.m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         updateSelection(dateStr, view.y, view.m + 1, day);
+        setActiveDropdown(null);
         setIsOpen(false);
     };
 
@@ -168,6 +188,7 @@ export const NepaliDatePicker = ({
         const dateStr = `${todayBS.year}-${String(todayBS.month).padStart(2, '0')}-${String(todayBS.day).padStart(2, '0')}`;
         setView({ y: todayBS.year, m: todayBS.month - 1 });
         updateSelection(dateStr, todayBS.year, todayBS.month, todayBS.day);
+        setActiveDropdown(null);
         setIsOpen(false);
     };
 
@@ -175,6 +196,7 @@ export const NepaliDatePicker = ({
         e.stopPropagation();
         setSelectedDate("");
         onChange?.(null, null);
+        setActiveDropdown(null);
         setIsOpen(false);
     };
 
@@ -220,7 +242,7 @@ export const NepaliDatePicker = ({
                                 {monthsList[view.m]}
                             </div>
                             {activeDropdown === 'm' && (
-                                <div className="nck-select-options">
+                                <div className="nck-select-options" ref={monthOptionsRef}>
                                     {monthsList.map((n, i) => (
                                         <div key={i} className={`nck-option ${view.m === i ? 'selected' : ''}`}
                                             onClick={() => { setView({ ...view, m: i }); setActiveDropdown(null); }}>
@@ -237,7 +259,7 @@ export const NepaliDatePicker = ({
                                 {(yearLan === 'np' || (yearLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(view.y) : view.y}
                             </div>
                             {activeDropdown === 'y' && (
-                                <div className="nck-select-options">
+                                <div className="nck-select-options" ref={yearOptionsRef}>
                                     {availableYears.map(y => (
                                         <div key={y} className={`nck-option ${view.y === y ? 'selected' : ''}`}
                                             onClick={() => { setView({ ...view, y: y }); setActiveDropdown(null); }}>

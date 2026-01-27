@@ -299,6 +299,7 @@
   max-height: 200px;
   overflow-y: auto;
   z-index: 100;
+  scroll-behavior: smooth;
 }
 
 .nck-option {
