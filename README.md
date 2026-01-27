@@ -39,7 +39,7 @@ You can use the library directly in your HTML files.
 #### Core Logic Only (**React-Free**, 16KB)
 
 ```html
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.21/dist/bundle.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.25/dist/bundle.umd.js"></script>
 ```
 
 #### Full UI Component (Requires React)
@@ -50,10 +50,10 @@ You can use the library directly in your HTML files.
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 <!-- Library & Styles -->
-<script src="https://unpkg.com/nepali-date-picker-converter@0.1.21/dist/bundle.react.umd.js"></script>
+<script src="https://unpkg.com/nepali-date-picker-converter@0.1.25/dist/bundle.react.umd.js"></script>
 <link
   rel="stylesheet"
-  href="https://unpkg.com/nepali-date-picker-converter@0.1.21/dist/bundle.react.umd.css"
+  href="https://unpkg.com/nepali-date-picker-converter@0.1.25/dist/bundle.react.umd.css"
 />
 ```
 
