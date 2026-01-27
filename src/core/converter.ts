@@ -28,110 +28,143 @@ const AD_REFERENCE = new Date(Date.UTC(1913, 3, 13));
 
 /**
  * AD → BS Converter
+ * Returns BSDate object for Date input, or "YYYY-MM-DD" string for string input.
+ * Returns null/"" respectively on invalid input.
  */
-export function adToBs(adDate: Date): BSDate {
-  if (!(adDate instanceof Date) || isNaN(adDate.getTime())) {
-    throw new Error("Invalid AD date");
+export function adToBs(adDate: Date): BSDate | null;
+export function adToBs(adDate: string): string;
+export function adToBs(adDate: Date | string): BSDate | string | null {
+  try {
+    let dateObj: Date;
+    const isStrInput = typeof adDate === "string";
+
+    if (isStrInput) {
+      dateObj = new Date(adDate);
+    } else {
+      dateObj = adDate;
+    }
+
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      return isStrInput ? "" : null;
+    }
+
+    const adUtc = normalizeToUtc(dateObj);
+    let totalDays = Math.floor(
+      (adUtc.getTime() - AD_REFERENCE.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (totalDays < 0 || totalDays >= 1000000) {
+      // Basic bounds check
+      return isStrInput ? "" : null;
+    }
+
+    let bsYear = NP_INITIAL_YEAR;
+    let yearIndex = 0;
+
+    while (yearIndex < NP_MONTHS_DATA.length) {
+      const yearMonths = NP_MONTHS_DATA[yearIndex][0];
+      const yearDays = yearMonths.reduce((a, b) => a + b, 0);
+
+      if (totalDays < yearDays) break;
+
+      totalDays -= yearDays;
+      yearIndex++;
+      bsYear++;
+    }
+
+    if (yearIndex >= NP_MONTHS_DATA.length) {
+      return isStrInput ? "" : null;
+    }
+
+    const monthsData = NP_MONTHS_DATA[yearIndex][0];
+    let bsMonth = 1;
+
+    for (let i = 0; i < 12; i++) {
+      if (totalDays < monthsData[i]) break;
+      totalDays -= monthsData[i];
+      bsMonth++;
+    }
+
+    const result = {
+      year: bsYear,
+      month: bsMonth,
+      day: totalDays + 1,
+    };
+
+    if (isStrInput) {
+      return `${result.year}-${String(result.month).padStart(2, "0")}-${String(result.day).padStart(2, "0")}`;
+    }
+    return result;
+  } catch (e) {
+    return typeof adDate === "string" ? "" : null;
   }
-
-  const adUtc = normalizeToUtc(adDate);
-
-  let totalDays = Math.floor(
-    (adUtc.getTime() - AD_REFERENCE.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  if (totalDays < 0) {
-    throw new Error("AD date is before supported Nepali calendar range");
-  }
-
-  let bsYear = NP_INITIAL_YEAR;
-  let yearIndex = 0;
-
-  while (yearIndex < NP_MONTHS_DATA.length) {
-    const yearMonths = NP_MONTHS_DATA[yearIndex][0];
-    const yearDays = yearMonths.reduce((a, b) => a + b, 0);
-
-    if (totalDays < yearDays) break;
-
-    totalDays -= yearDays;
-    yearIndex++;
-    bsYear++;
-  }
-
-  const monthsData = NP_MONTHS_DATA[yearIndex][0];
-  let bsMonth = 1;
-
-  for (let i = 0; i < 12; i++) {
-    if (totalDays < monthsData[i]) break;
-    totalDays -= monthsData[i];
-    bsMonth++;
-  }
-
-  return {
-    year: bsYear,
-    month: bsMonth,
-    day: totalDays + 1,
-  };
 }
 
 /**
  * BS → AD Converter
- * Accepts (year, month, day) OR (dateString) OR (NepaliDate instance)
+ * Accepts (year, month, day) OR (dateString) OR (NepaliDate instance).
+ * Returns Date object for number/object input, or "YYYY-MM-DD" string for string input.
+ * Returns null/"" respectively on invalid input.
  */
+export function bsToAd(year: number, month: number, day: number): Date | null;
+export function bsToAd(dateString: string): string;
+export function bsToAd(nepaliDate: { toBS: () => BSDate }): Date | null;
 export function bsToAd(
   yearOrStr: number | string | { toBS: () => BSDate },
   month?: number,
   day?: number
-): Date {
-  let bsYear: number;
-  let bsMonth: number;
-  let bsDay: number;
+): Date | string | null {
+  try {
+    let bsYear: number;
+    let bsMonth: number;
+    let bsDay: number;
+    const isStrInput = typeof yearOrStr === "string";
 
-  if (typeof yearOrStr === "string") {
-    const parts = yearOrStr.split(/[-/]/).map(Number);
-    bsYear = parts[0];
-    bsMonth = parts[1];
-    bsDay = parts[2];
-  } else if (yearOrStr !== null && typeof yearOrStr === "object" && "toBS" in (yearOrStr as any)) {
-    const bs = (yearOrStr as any).toBS();
-    bsYear = bs.year;
-    bsMonth = bs.month;
-    bsDay = bs.day;
-  } else {
-    bsYear = yearOrStr as number;
-    bsMonth = month!;
-    bsDay = day!;
+    if (isStrInput) {
+      const parts = yearOrStr.split(/[-/]/).map(Number);
+      if (parts.length < 3 || parts.some(isNaN)) return "";
+      bsYear = parts[0];
+      bsMonth = parts[1];
+      bsDay = parts[2];
+    } else if (yearOrStr !== null && typeof yearOrStr === "object" && "toBS" in (yearOrStr as any)) {
+      const bs = (yearOrStr as any).toBS();
+      bsYear = bs.year;
+      bsMonth = bs.month;
+      bsDay = bs.day;
+    } else {
+      bsYear = yearOrStr as number;
+      bsMonth = month!;
+      bsDay = day!;
+    }
+
+    const yearIndex = bsYear - NP_INITIAL_YEAR;
+    const yearData = NP_MONTHS_DATA[yearIndex];
+
+    if (!yearData) return isStrInput ? "" : null;
+
+    let totalDays = 0;
+    for (let y = 0; y < yearIndex; y++) {
+      totalDays += NP_MONTHS_DATA[y][0].reduce((a, b) => a + b, 0);
+    }
+
+    const months = yearData[0];
+    if (bsMonth < 1 || bsMonth > 12) return isStrInput ? "" : null;
+
+    for (let m = 0; m < bsMonth - 1; m++) {
+      totalDays += months[m];
+    }
+
+    totalDays += bsDay - 1;
+    const adUtc = new Date(AD_REFERENCE);
+    adUtc.setUTCDate(adUtc.getUTCDate() + totalDays);
+
+    if (isStrInput) {
+      return formatAd(adUtc, "YYYY-MM-DD");
+    }
+    return adUtc;
+  } catch (e) {
+    return typeof yearOrStr === "string" ? "" : null;
   }
-
-  const yearIndex = bsYear - NP_INITIAL_YEAR;
-  const yearData = NP_MONTHS_DATA[yearIndex];
-
-  if (!yearData) {
-    throw new Error(`BS year ${bsYear} is out of supported range (${NP_INITIAL_YEAR} - ${NP_INITIAL_YEAR + NP_MONTHS_DATA.length - 1})`);
-  }
-
-  let totalDays = 0;
-
-  for (let y = 0; y < yearIndex; y++) {
-    totalDays += NP_MONTHS_DATA[y][0].reduce((a, b) => a + b, 0);
-  }
-
-  const months = yearData[0];
-  
-  if (bsMonth < 1 || bsMonth > 12) {
-      throw new Error("BS month must be between 1 and 12");
-  }
-
-  for (let m = 0; m < bsMonth - 1; m++) {
-    totalDays += months[m];
-  }
-
-  totalDays += bsDay - 1;
-
-  const adUtc = new Date(AD_REFERENCE);
-  adUtc.setUTCDate(adUtc.getUTCDate() + totalDays);
-
-  return adUtc;
 }
 
 //
@@ -205,7 +238,7 @@ function getNepaliMonth(month: number, type: DisplayType): string {
 function getNepaliDayName(bsDate: BSDate, type: DisplayType): string {
   // Convert BS date to AD to get the correct weekday
   const adDate = bsToAd(bsDate.year, bsDate.month, bsDate.day);
-  const index = adDate.getUTCDay(); // 0=Sunday, 1=Monday, ... 6=Saturday
+  const index = adDate ? adDate.getUTCDay() : 0; // 0=Sunday, 1=Monday, ... 6=Saturday
   const name = NepaliDaysData[index].np;
   if (type === "long") return name;
   if (type === "short") return name.slice(0, 3); // first 3 chars

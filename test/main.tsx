@@ -23,25 +23,29 @@ const ConverterExample = () => {
   React.useEffect(() => {
     const today = new Date();
     const todayBS = adToBs(today);
-    setTodayResult({
-      ad: today.toISOString().split('T')[0],
-      bs: `${todayBS.year}-${todayBS.month}-${todayBS.day}`,
-      formatted: formatBs(todayBS, 'YYYY-MM-DD'),
-      nepali: toNepaliNumeral(`${todayBS.year}-${todayBS.month}-${todayBS.day}`)
-    });
+    if (todayBS) {
+      setTodayResult({
+        ad: today.toISOString().split('T')[0],
+        bs: `${todayBS.year}-${todayBS.month}-${todayBS.day}`,
+        formatted: formatBs(todayBS, 'YYYY-MM-DD'),
+        nepali: toNepaliNumeral(`${todayBS.year}-${todayBS.month}-${todayBS.day}`)
+      });
+    }
   }, []);
 
   const convertADtoBS = () => {
     try {
       const date = new Date(adInput);
       const bsDate = adToBs(date);
-      setConversionResult({
-        type: 'adToBs',
-        input: adInput,
-        output: `${bsDate.year}-${bsDate.month}-${bsDate.day}`,
-        formatted: formatBs(bsDate, 'YYYY-MM-DD'),
-        nepali: toNepaliNumeral(`${bsDate.year}-${bsDate.month}-${bsDate.day}`)
-      });
+      if (bsDate) {
+        setConversionResult({
+          type: 'adToBs',
+          input: adInput,
+          output: `${bsDate.year}-${bsDate.month}-${bsDate.day}`,
+          formatted: formatBs(bsDate, 'YYYY-MM-DD'),
+          nepali: toNepaliNumeral(`${bsDate.year}-${bsDate.month}-${bsDate.day}`)
+        });
+      }
     } catch (error: any) {
       alert('Error: ' + error.message);
     }
@@ -53,16 +57,18 @@ const ConverterExample = () => {
       const month = parseInt(bsMonth);
       const day = parseInt(bsDay);
       const adDate = bsToAd(year, month, day);
-      setConversionResult({
-        type: 'bsToAd',
-        input: `${year}-${month}-${day}`,
-        output: adDate.toISOString().split('T')[0],
-        formatted: adDate.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        })
-      });
+      if (adDate) {
+        setConversionResult({
+          type: 'bsToAd',
+          input: `${year}-${month}-${day}`,
+          output: adDate.toISOString().split('T')[0],
+          formatted: adDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })
+        });
+      }
     } catch (error: any) {
       alert('Error: ' + error.message);
     }
@@ -209,7 +215,7 @@ const DatePickerExample = () => {
 
   // Today's date for max restriction example
   const today = new Date();
-  const todayBS = adToBs(today);
+  const todayBS = adToBs(today) || { year: 2081, month: 1, day: 1 };
   const todayStr = `${todayBS.year}-${String(todayBS.month).padStart(2, '0')}-${String(todayBS.day).padStart(2, '0')}`;
 
   return (
@@ -285,8 +291,10 @@ const SyncDemoExample = () => {
         const adDate = new Date(e.target.value);
         if (!isNaN(adDate.getTime())) {
             const bs = adToBs(adDate); 
-            const bsStr = `${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.day).padStart(2, '0')}`;
-            setBsValue(bsStr);
+            if (bs && typeof bs === 'object') {
+                const bsStr = `${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.day).padStart(2, '0')}`;
+                setBsValue(bsStr);
+            }
         }
     };
 

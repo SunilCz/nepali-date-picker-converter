@@ -18,9 +18,13 @@ console.log('\n1️⃣  Testing AD to BS Conversion:');
 try {
   const testDate1 = new Date(2024, 0, 15); // Jan 15, 2024
   const bsDate1 = adToBs(testDate1);
-  console.log(`   Input: ${testDate1.toISOString().split('T')[0]} (AD)`);
-  console.log(`   Output: ${bsDate1.year}-${bsDate1.month}-${bsDate1.day} (BS)`);
-  console.log(`   ✅ Success`);
+  if (bsDate1) {
+    console.log(`   Input: ${testDate1.toISOString().split('T')[0]} (AD)`);
+    console.log(`   Output: ${bsDate1.year}-${bsDate1.month}-${bsDate1.day} (BS)`);
+    console.log(`   ✅ Success`);
+  } else {
+    console.log(`   ❌ Error: Conversion returned null`);
+  }
 } catch (error) {
   console.log(`   ❌ Error: ${error}`);
 }
@@ -32,9 +36,13 @@ try {
   const bsMonth = 10;
   const bsDay = 15;
   const adDate = bsToAd(bsYear, bsMonth, bsDay);
-  console.log(`   Input: ${bsYear}-${bsMonth}-${bsDay} (BS)`);
-  console.log(`   Output: ${adDate.toISOString().split('T')[0]} (AD)`);
-  console.log(`   ✅ Success`);
+  if (adDate) {
+    console.log(`   Input: ${bsYear}-${bsMonth}-${bsDay} (BS)`);
+    console.log(`   Output: ${adDate.toISOString().split('T')[0]} (AD)`);
+    console.log(`   ✅ Success`);
+  } else {
+    console.log(`   ❌ Error: Conversion returned null`);
+  }
 } catch (error) {
   console.log(`   ❌ Error: ${error}`);
 }
@@ -44,12 +52,20 @@ console.log('\n3️⃣  Testing Round Trip Conversion:');
 try {
   const originalDate = new Date(2024, 5, 15); // June 15, 2024
   const bsDate = adToBs(originalDate);
-  const convertedBack = bsToAd(bsDate.year, bsDate.month, bsDate.day);
-  const isSame = originalDate.toDateString() === convertedBack.toDateString();
-  console.log(`   Original AD: ${originalDate.toISOString().split('T')[0]}`);
-  console.log(`   Converted to BS: ${bsDate.year}-${bsDate.month}-${bsDate.day}`);
-  console.log(`   Converted back to AD: ${convertedBack.toISOString().split('T')[0]}`);
-  console.log(`   Round trip match: ${isSame ? '✅ Yes' : '❌ No'}`);
+  if (bsDate) {
+      const convertedBack = bsToAd(bsDate.year, bsDate.month, bsDate.day);
+      if (convertedBack) {
+          const isSame = originalDate.toDateString() === convertedBack.toDateString();
+          console.log(`   Original AD: ${originalDate.toISOString().split('T')[0]}`);
+          console.log(`   Converted to BS: ${bsDate.year}-${bsDate.month}-${bsDate.day}`);
+          console.log(`   Converted back to AD: ${convertedBack.toISOString().split('T')[0]}`);
+          console.log(`   Round trip match: ${isSame ? '✅ Yes' : '❌ No'}`);
+      } else {
+          console.log(`   ❌ Error: back-conversion returned null`);
+      }
+  } else {
+    console.log(`   ❌ Error: BS conversion returned null`);
+  }
 } catch (error) {
   console.log(`   ❌ Error: ${error}`);
 }
@@ -90,8 +106,10 @@ try {
   const nepaliDate = NepaliDate.today();
   console.log(`   Today in BS: ${nepaliDate.getYear()}-${nepaliDate.getMonth()}-${nepaliDate.getDate()}`);
   console.log(`   Formatted: ${nepaliDate.format('YYYY-MM-DD')}`);
-  console.log(`   To AD: ${nepaliDate.toAD().toISOString().split('T')[0]}`);
-  console.log(`   ✅ Success`);
+  if (nepaliDate.toAD()) {
+    console.log(`   To AD: ${nepaliDate.toAD()!.toISOString().split('T')[0]}`);
+    console.log(`   ✅ Success`);
+  }
 } catch (error) {
   console.log(`   ❌ Error: ${error}`);
 }
@@ -113,18 +131,24 @@ console.log('\n8️⃣  Testing Edge Cases:');
 try {
   // Test first day of Nepali calendar (1970-01-01)
   const firstBS = bsToAd(1970, 1, 1);
-  console.log(`   First BS date (1970-01-01) = ${firstBS.toISOString().split('T')[0]} (AD)`);
+  if (firstBS) {
+    console.log(`   First BS date (1970-01-01) = ${firstBS.toISOString().split('T')[0]} (AD)`);
+  }
   
   // Test previous epoch (2000-01-01)
   const epoch2000 = bsToAd(2000, 1, 1);
-  console.log(`   2000-01-01 BS = ${epoch2000.toISOString().split('T')[0]} (AD)`);
+  if (epoch2000) {
+    console.log(`   2000-01-01 BS = ${epoch2000.toISOString().split('T')[0]} (AD)`);
+  }
   
   // Test today
   const today = new Date();
   const todayBS = adToBs(today);
-  console.log(`   Today (AD): ${today.toISOString().split('T')[0]}`);
-  console.log(`   Today (BS): ${todayBS.year}-${todayBS.month}-${todayBS.day}`);
-  console.log(`   ✅ Success`);
+  if (todayBS) {
+    console.log(`   Today (AD): ${today.toISOString().split('T')[0]}`);
+    console.log(`   Today (BS): ${todayBS.year}-${todayBS.month}-${todayBS.day}`);
+    console.log(`   ✅ Success`);
+  }
 } catch (error) {
   console.log(`   ❌ Error: ${error}`);
 }

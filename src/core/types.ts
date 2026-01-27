@@ -24,7 +24,7 @@ export interface DatePickerResult {
   /** The date string in BS (e.g., "2082-09-30") */
   bs: string;
   /** The equivalent JavaScript Date object in AD */
-  ad: Date;
+  ad: Date | null;
   /** The Nepali numeral version of the BS date (e.g., "२०८२-०९-३०") */
   nepali: string;
   /** The BS date as an object */

@@ -4,20 +4,20 @@ import { toNepaliNumeral } from "../utils/formatter";
 
 export class NepaliDate {
   public bs: string;
-  public ad: Date;
+  public ad: Date | null;
   public nepali: string;
   public bsDate: BSDate;
 
   constructor(date?: Date | BSDate | string) {
     if (!date) {
-      this._bs = adToBs(new Date());
+      this._bs = adToBs(new Date()) || { year: 2081, month: 1, day: 1 };
     } else if (date instanceof Date) {
-      this._bs = adToBs(date);
+      this._bs = adToBs(date) || adToBs(new Date()) || { year: 2081, month: 1, day: 1 };
     } else if (typeof date === "string") {
       const [y, m, d] = date.split(/[-/]/).map(Number);
       if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d) ||
           m < 1 || m > 12 || d < 1 || d > 32) {
-        this._bs = adToBs(new Date()); // fallback to today
+        this._bs = adToBs(new Date()) || { year: 2081, month: 1, day: 1 };
       } else {
         this._bs = { year: y, month: m, day: d };
       }
@@ -64,10 +64,11 @@ export class NepaliDate {
   }
 
   getDay(): number {
-    return bsToAd(this.bsDate.year, this.bsDate.month, this.bsDate.day).getUTCDay();
+    const ad = bsToAd(this.bsDate.year, this.bsDate.month, this.bsDate.day);
+    return ad ? ad.getUTCDay() : 0;
   }
 
-  toAD(): Date {
+  toAD(): Date | null {
     return bsToAd(this.bsDate.year, this.bsDate.month, this.bsDate.day);
   }
 

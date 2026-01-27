@@ -6,7 +6,7 @@ import {
     NP_INITIAL_YEAR,
     NP_MONTHS_DATA
 } from '../core/metadata';
-import { toNepaliNumeral } from '../utils/formatter';
+import { toNepaliNumeral, getSafeBSDateString } from '../utils/formatter';
 import './styles.css';
 import { DatePickerResult, LanguageCode, Theme, NepaliDatePickerProps } from '../core/types';
 
@@ -32,14 +32,7 @@ export const NepaliDatePicker = ({
     const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
     const [isMounted, setIsMounted] = useState(false);
     
-    // Normalize value from prop
-    const getInitialValue = (val: string | any | undefined): string => {
-        if (!val) return "";
-        if (typeof val === 'string') return val;
-        return typeof val.format === 'function' ? val.format("YYYY-MM-DD") : "";
-    };
-
-    const [selectedDate, setSelectedDate] = useState<string>(getInitialValue(valueProp));
+    const [selectedDate, setSelectedDate] = useState<string>(getSafeBSDateString(valueProp) || "");
     const prevLanguageProp = useRef<LanguageCode>(language);
 
     useEffect(() => {
@@ -63,7 +56,7 @@ export const NepaliDatePicker = ({
 
     const todayBS = useMemo(() => {
         try {
-            return adToBs(new Date());
+            return adToBs(new Date()) || { year: 2081, month: 1, day: 1 };
         } catch (e) {
             // Fallback to a safe middle-range date if system clock is out of range
             return { year: 2081, month: 1, day: 1 };
@@ -71,7 +64,7 @@ export const NepaliDatePicker = ({
     }, []);
 
     const [view, setView] = useState<{ y: number; m: number }>(() => {
-        const val = getInitialValue(valueProp);
+        const val = getSafeBSDateString(valueProp);
         if (val && val.includes('-')) {
             const [y, m] = val.split('-').map(Number);
             if (!Number.isNaN(y) && !Number.isNaN(m) && m >= 1 && m <= 12 &&
@@ -83,7 +76,7 @@ export const NepaliDatePicker = ({
     });
 
     useEffect(() => {
-        const val = getInitialValue(valueProp);
+        const val = getSafeBSDateString(valueProp);
         if (val && val !== selectedDate) {
             setSelectedDate(val);
             if (val.includes('-')) {
@@ -93,6 +86,8 @@ export const NepaliDatePicker = ({
                     setView({ y, m: m - 1 });
                 }
             }
+        } else if (valueProp === null || valueProp === "") {
+            setSelectedDate("");
         }
     }, [valueProp]);
 
@@ -160,7 +155,8 @@ export const NepaliDatePicker = ({
         const yearIndex = view.y - NP_INITIAL_YEAR;
         if (yearIndex >= 0 && yearIndex < NP_MONTHS_DATA.length && view.m >= 0 && view.m < 12) {
             try {
-                return bsToAd(view.y, view.m + 1, 1).getDay();
+                const ad = bsToAd(view.y, view.m + 1, 1);
+                return ad ? ad.getDay() : 0;
             } catch (e) {
                 return 0;
             }
