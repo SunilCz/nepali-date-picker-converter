@@ -11,10 +11,16 @@ import './styles.css';
 import { DatePickerResult, LanguageCode, Theme, NepaliDatePickerProps } from '../core/types';
 
 
+import { NepaliDate } from '../core/NepaliDate';
+
 export const NepaliDatePicker = ({
     onChange,
     theme,
-    value,
+    value: valueProp,
+    max,
+    min,
+    placeholder,
+    inputClassName,
     dateLan = 'en',
     monthLan = 'en',
     dayLan = 'en',
@@ -24,8 +30,20 @@ export const NepaliDatePicker = ({
 }: NepaliDatePickerProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(language);
-    const [selectedDate, setSelectedDate] = useState<string>(value || "");
+    
+    // Normalize value from prop
+    const getInitialValue = (val: string | NepaliDate | undefined): string => {
+        if (!val) return "";
+        if (typeof val === 'string') return val;
+        return val.format("YYYY-MM-DD");
+    };
+
+    const [selectedDate, setSelectedDate] = useState<string>(getInitialValue(valueProp));
     const prevLanguageProp = useRef<LanguageCode>(language);
+
+    // Parse max and min for comparison
+    const maxDateStr = useMemo(() => max ? (typeof max === 'string' ? max : max.format("YYYY-MM-DD")) : null, [max]);
+    const minDateStr = useMemo(() => min ? (typeof min === 'string' ? min : min.format("YYYY-MM-DD")) : null, [min]);
 
     useEffect(() => {
         if (prevLanguageProp.current !== language) {
@@ -39,22 +57,24 @@ export const NepaliDatePicker = ({
     const todayBS = useMemo(() => adToBs(new Date()), []);
 
     const [view, setView] = useState<{ y: number; m: number }>(() => {
-        if (value && value.includes('-')) {
-            const [y, m] = value.split('-').map(Number);
+        const val = getInitialValue(valueProp);
+        if (val && val.includes('-')) {
+            const [y, m] = val.split('-').map(Number);
             return { y, m: m - 1 };
         }
         return { y: todayBS.year, m: todayBS.month - 1 };
     });
 
     useEffect(() => {
-        if (value && value !== selectedDate) {
-            setSelectedDate(value);
-            if (value.includes('-')) {
-                const [y, m] = value.split('-').map(Number);
+        const val = getInitialValue(valueProp);
+        if (val && val !== selectedDate) {
+            setSelectedDate(val);
+            if (val.includes('-')) {
+                const [y, m] = val.split('-').map(Number);
                 setView({ y, m: m - 1 });
             }
         }
-    }, [value]);
+    }, [valueProp]);
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -78,7 +98,18 @@ export const NepaliDatePicker = ({
 
     const monthsList = (monthLan === 'np' || (monthLan === 'en' && currentLanguage === 'np')) ? NepaliMonthsData.map(m => m.np) : NepaliMonthsData.map(m => m.en);
     const daysList = (dayLan === 'np' || (dayLan === 'en' && currentLanguage === 'np')) ? NepaliDaysData.map(d => d.np) : NepaliDaysData.map(d => d.en);
-    const availableYears = useMemo(() => NP_MONTHS_DATA.map((_, i) => NP_INITIAL_YEAR + i), []);
+    const availableYears = useMemo(() => {
+        let years = NP_MONTHS_DATA.map((_, i) => NP_INITIAL_YEAR + i);
+        if (maxDateStr) {
+            const maxY = parseInt(maxDateStr.split('-')[0]);
+            years = years.filter(y => y <= maxY);
+        }
+        if (minDateStr) {
+            const minY = parseInt(minDateStr.split('-')[0]);
+            years = years.filter(y => y >= minY);
+        }
+        return years;
+    }, [maxDateStr, minDateStr]);
 
     const monthDays = useMemo(() => {
         const yearData = NP_MONTHS_DATA[view.y - NP_INITIAL_YEAR];
@@ -87,13 +118,22 @@ export const NepaliDatePicker = ({
 
     const startDayOfWeek = useMemo(() => bsToAd(view.y, view.m + 1, 1).getDay(), [view.y, view.m]);
 
+    const isDateDisabled = (year: number, month: number, day: number) => {
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        if (maxDateStr && dateStr > maxDateStr) return true;
+        if (minDateStr && dateStr < minDateStr) return true;
+        return false;
+    };
+
     const handleSelect = (day: number) => {
+        if (isDateDisabled(view.y, view.m + 1, day)) return;
         const dateStr = `${view.y}-${String(view.m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         updateSelection(dateStr, view.y, view.m + 1, day);
         setIsOpen(false);
     };
 
     const handleToday = () => {
+        if (isDateDisabled(todayBS.year, todayBS.month, todayBS.day)) return;
         const dateStr = `${todayBS.year}-${String(todayBS.month).padStart(2, '0')}-${String(todayBS.day).padStart(2, '0')}`;
         setView({ y: todayBS.year, m: todayBS.month - 1 });
         updateSelection(dateStr, todayBS.year, todayBS.month, todayBS.day);
@@ -103,28 +143,33 @@ export const NepaliDatePicker = ({
     const handleClear = (e: React.MouseEvent) => {
         e.stopPropagation();
         setSelectedDate("");
-        onChange?.(null);
+        onChange?.(null, null);
         setIsOpen(false);
     };
 
     const updateSelection = (dateStr: string, y: number, m: number, d: number) => {
         setSelectedDate(dateStr);
-        onChange?.({
+        const result: DatePickerResult = {
             bs: dateStr,
             ad: bsToAd(y, m, d),
             nepali: toNepaliNumeral(dateStr),
             bsDate: { year: y, month: m, day: d }
-        });
+        };
+        
+        // Pass NepaliDate instance as first argument for "complex" support
+        // But also ensure it can be treated as a string by some users if they use it in simplified contexts
+        const nepaliDate = new NepaliDate(result.bsDate);
+        onChange?.(nepaliDate, result);
     };
 
     return (
         <div className="nck-wrapper" style={dynamicStyle} ref={pickerRef}>
-            <div className="nck-input-box" onClick={() => setIsOpen(!isOpen)}>
+            <div className={`nck-input-box ${inputClassName || ""}`} onClick={() => setIsOpen(!isOpen)}>
                 <input
-                    className="nck-input"
+                    className={`nck-input ${inputClassName || ""}`}
                     readOnly
                     value={(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(selectedDate) : selectedDate}
-                    placeholder={(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? "२०८२-०९-३०" : "YYYY-MM-DD"}
+                    placeholder={placeholder || ((dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? "२०८२-०९-३०" : "YYYY-MM-DD")}
                 />
                 <div className="nck-input-actions">
                     <div className="nck-icon">
@@ -196,8 +241,9 @@ export const NepaliDatePicker = ({
                             const d = i + 1;
                             const isSelected = selectedDate === `${view.y}-${String(view.m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                             const isToday = todayBS.year === view.y && todayBS.month === (view.m + 1) && todayBS.day === d;
+                            const disabled = isDateDisabled(view.y, view.m + 1, d);
                             return (
-                                <div key={d} className={`nck-cell ${isSelected ? 'active' : ''} ${isToday ? 'today' : ''}`} onClick={() => handleSelect(d)}>
+                                <div key={d} className={`nck-cell ${isSelected ? 'active' : ''} ${isToday ? 'today' : ''} ${disabled ? 'disabled' : ''}`} onClick={() => handleSelect(d)}>
                                     {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? toNepaliNumeral(d) : d}
                                 </div>
                             );
@@ -205,7 +251,11 @@ export const NepaliDatePicker = ({
                     </div>
 
                     <div className="nck-footer">
-                        <button type="button" className="nck-footer-btn nck-btn-today" onClick={handleToday}>
+                        <button type="button" 
+                            className="nck-footer-btn nck-btn-today" 
+                            disabled={isDateDisabled(todayBS.year, todayBS.month, todayBS.day)}
+                            onClick={handleToday}
+                        >
                             {(dateLan === 'np' || (dateLan === 'en' && currentLanguage === 'np')) ? 'आज' : 'Today'}
                         </button>
                         <button type="button" className="nck-footer-btn nck-btn-clear" onClick={handleClear}>

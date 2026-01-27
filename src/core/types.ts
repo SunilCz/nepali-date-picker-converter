@@ -1,6 +1,6 @@
 export type BSMetadata = Record<string, number[]>;
 export type LanguageCode = "en" | "np";
-export interface NepaliDate {
+export interface NepaliDateData {
   year: number;
   month: number;
   day: number;
@@ -49,13 +49,30 @@ export interface Theme {
 }
 
 export interface NepaliDatePickerProps {
-  onChange?: (result: DatePickerResult | null) => void;
+  /** Callback when date is selected */
+  onChange?: (value: any, result: DatePickerResult | null) => void;
+  /** Custom theme configuration */
   theme?: Theme;
-  value?: string;
+  /** Current value of the picker (string "YYYY-MM-DD" or NepaliDate object) */
+  value?: string | any;
+  /** Maximum selectable date */
+  max?: string | any;
+  /** Minimum selectable date */
+  min?: string | any;
+  /** Placeholder text for the input */
+  placeholder?: string;
+  /** CSS class for the input element */
+  inputClassName?: string;
+  /** Language for the date display */
   dateLan?: LanguageCode;
+  /** Language for the month names */
   monthLan?: LanguageCode;
+  /** Language for the day names */
   dayLan?: LanguageCode;
+  /** Language for the year numeric */
   yearLan?: LanguageCode;
+  /** Default UI language */
   language?: LanguageCode;
+  /** Whether to show the language switcher toggle */
   showLanguageSwitcher?: boolean;
 }

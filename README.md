@@ -99,24 +99,28 @@ Use the `mountNepaliDatePicker` helper to embed the UI component without writing
 
 ```tsx
 import React, { useState } from "react";
-import { NepaliDatePicker, bsToAd } from "nepali-date-picker-converter";
+import { NepaliDatePicker, NepaliDate } from "nepali-date-picker-converter";
 import "nepali-date-picker-converter/dist/bundle.react.umd.css";
 
 function App() {
-  const [adDate, setAdDate] = useState("");
+  const [date, setDate] = useState<NepaliDate | null>(null);
 
-  const handleDateChange = (result) => {
-    if (!result) return;
+  const handleDateChange = (val: NepaliDate | null) => {
+    if (!val) return;
 
-    // Use the convenient bsDate object for conversion
-    const { year, month, day } = result.bsDate;
-    const ad = bsToAd(year, month, day);
+    // val is a complex object with methods
+    console.log("BS Date:", val.format("YYYY-MM-DD"));
+    console.log("AD Date:", val.toAD());
 
-    setAdDate(ad.toDateString());
+    setDate(val);
   };
 
   return (
     <NepaliDatePicker
+      value={date}
+      placeholder="Select Event Date"
+      inputClassName="form-control"
+      max={new NepaliDate()} // Max date is today
       onChange={handleDateChange}
       theme={{ primary: "#2563eb" }}
     />
@@ -186,11 +190,26 @@ picker.setValue("2081-10-15");
 
 ```typescript
 interface NepaliDatePickerProps {
-  onChange?: (result: DatePickerResult | null) => void;
+  /** Callback when date is selected. Returns complex NepaliDate object. */
+  onChange?: (
+    value: NepaliDate | null,
+    result: DatePickerResult | null,
+  ) => void;
+  /** Custom theme configuration */
   theme?: Theme;
-  value?: string; // "YYYY-MM-DD"
-  yearLan?: "en" | "np";
+  /** "YYYY-MM-DD" or NepaliDate object */
+  value?: string | NepaliDate;
+  /** Max selectable date ("YYYY-MM-DD" or NepaliDate) */
+  max?: string | NepaliDate;
+  /** Min selectable date ("YYYY-MM-DD" or NepaliDate) */
+  min?: string | NepaliDate;
+  /** Custom placeholder for input */
+  placeholder?: string;
+  /** Custom CSS class for the input field */
+  inputClassName?: string;
+  /** UI language: "en" | "np" */
   language?: "en" | "np";
+  /** Show the language switcher toggle */
   showLanguageSwitcher?: boolean;
 }
 ```

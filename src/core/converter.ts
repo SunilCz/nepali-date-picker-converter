@@ -76,8 +76,33 @@ export function adToBs(adDate: Date): BSDate {
 
 /**
  * BS → AD Converter
+ * Accepts (year, month, day) OR (dateString) OR (NepaliDate instance)
  */
-export function bsToAd(bsYear: number, bsMonth: number, bsDay: number): Date {
+export function bsToAd(
+  yearOrStr: number | string | { toBS: () => BSDate },
+  month?: number,
+  day?: number
+): Date {
+  let bsYear: number;
+  let bsMonth: number;
+  let bsDay: number;
+
+  if (typeof yearOrStr === "string") {
+    const parts = yearOrStr.split(/[-/]/).map(Number);
+    bsYear = parts[0];
+    bsMonth = parts[1];
+    bsDay = parts[2];
+  } else if (typeof yearOrStr === "object" && "toBS" in yearOrStr) {
+    const bs = yearOrStr.toBS();
+    bsYear = bs.year;
+    bsMonth = bs.month;
+    bsDay = bs.day;
+  } else {
+    bsYear = yearOrStr as number;
+    bsMonth = month!;
+    bsDay = day!;
+  }
+
   const yearIndex = bsYear - NP_INITIAL_YEAR;
 
   if (!NP_MONTHS_DATA[yearIndex]) {

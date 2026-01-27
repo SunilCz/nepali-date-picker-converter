@@ -2,16 +2,43 @@ import { adToBs, bsToAd, formatBs } from "./converter";
 import { BSDate, DateFormat, DisplayType } from "./types";
 
 export class NepaliDate {
-  private bs: BSDate;
+  public bs: string;
+  public ad: Date;
+  public nepali: string;
+  public bsDate: BSDate;
 
-  constructor(date?: Date | BSDate) {
+  constructor(date?: Date | BSDate | string) {
     if (!date) {
-      this.bs = adToBs(new Date());
+      this._bs = adToBs(new Date());
     } else if (date instanceof Date) {
-      this.bs = adToBs(date);
+      this._bs = adToBs(date);
+    } else if (typeof date === "string") {
+      const [y, m, d] = date.split(/[-/]/).map(Number);
+      this._bs = { year: y, month: m, day: d };
     } else {
-      this.bs = date;
+      this._bs = date;
     }
+
+    // Initialize result properties
+    this.bsDate = { ...this._bs };
+    this.ad = bsToAd(this._bs.year, this._bs.month, this._bs.day);
+    this.bs = `${this._bs.year}-${String(this._bs.month).padStart(2, "0")}-${String(this._bs.day).padStart(2, "0")}`;
+    this.nepali = this.format("YYYY-MM-DD"); // This uses the formatter
+  }
+
+  private get _bs(): BSDate {
+    return this.bsDate;
+  }
+  private set _bs(val: BSDate) {
+    this.bsDate = val;
+  }
+
+  toString(): string {
+    return this.format("YYYY-MM-DD");
+  }
+
+  static parse(dateStr: string): NepaliDate {
+    return new NepaliDate(dateStr);
   }
 
   static today(): NepaliDate {
@@ -19,27 +46,27 @@ export class NepaliDate {
   }
 
   getYear(): number {
-    return this.bs.year;
+    return this.bsDate.year;
   }
 
   getMonth(): number {
-    return this.bs.month;
+    return this.bsDate.month;
   }
 
   getDate(): number {
-    return this.bs.day;
+    return this.bsDate.day;
   }
 
   getDay(): number {
-    return bsToAd(this.bs.year, this.bs.month, this.bs.day).getUTCDay();
+    return bsToAd(this.bsDate.year, this.bsDate.month, this.bsDate.day).getUTCDay();
   }
 
   toAD(): Date {
-    return bsToAd(this.bs.year, this.bs.month, this.bs.day);
+    return bsToAd(this.bsDate.year, this.bsDate.month, this.bsDate.day);
   }
 
   toBS(): BSDate {
-    return { ...this.bs };
+    return { ...this.bsDate };
   }
 
   format(
@@ -47,6 +74,6 @@ export class NepaliDate {
     displayMonth: DisplayType = "numeric",
     displayDay: DisplayType = "numeric"
   ): string {
-    return formatBs(this.bs, format, displayMonth, displayDay);
+    return formatBs(this.bsDate, format, displayMonth, displayDay);
   }
 }

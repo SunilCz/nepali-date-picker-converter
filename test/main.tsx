@@ -205,46 +205,73 @@ const ConverterExample = () => {
 // Date Picker Example
 const DatePickerExample = () => {
   const [selectedDate, setSelectedDate] = useState<any>(null);
+  const [restrictedDate, setRestrictedDate] = useState<any>(null);
+
+  // Today's date for max restriction example
+  const today = new Date();
+  const todayBS = adToBs(today);
+  const todayStr = `${todayBS.year}-${String(todayBS.month).padStart(2, '0')}-${String(todayBS.day).padStart(2, '0')}`;
 
   return (
     <div>
-      <p style={{ marginBottom: '15px', color: '#64748b' }}>
-        Click on the date picker below to select a date. The converted dates will appear automatically.
-      </p>
-      <NepaliDatePicker
-        onChange={(result) => {
-          console.log('Date selected:', result);
-          setSelectedDate(result);
-        }}
-        theme={{
-          primary: '#2563eb',
-          radius: '12px'
-        }}
-      />
-      {selectedDate && (
-        <div className="result-box" style={{ marginTop: '20px', background: '#f0fdf4', borderLeft: '4px solid #10b981' }}>
-          <h3 style={{ marginTop: 0, color: '#10b981' }}>✅ Selected Date Result:</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '10px' }}>
-            <div>
-              <p style={{ fontWeight: '600', marginBottom: '5px' }}>Nepali (BS):</p>
-              <p style={{ fontSize: '18px' }}>{selectedDate.bs}</p>
-              <p style={{ fontSize: '24px', marginTop: '5px', color: '#059669' }}>{selectedDate.nepali}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+        {/* Basic Example */}
+        <div className="example-card">
+          <h3 style={{ marginBottom: '10px' }}>1. Basic & Complex Usage</h3>
+          <p style={{ marginBottom: '15px', color: '#64748b', fontSize: '14px' }}>
+            Supports <code>inputClassName</code> and complex <code>onChange</code> objects.
+          </p>
+          <NepaliDatePicker
+            inputClassName="test-input-custom"
+            placeholder="Select a date..."
+            onChange={(val, result) => {
+              console.log('Class-based value:', val);
+              console.log('Result result:', result);
+              // Demonstrating .format() on the first argument
+              setSelectedDate(val);
+            }}
+          />
+          {selectedDate && (
+            <div style={{ marginTop: '15px', padding: '10px', background: '#f8fafc', borderRadius: '8px', fontSize: '13px' }}>
+              <p><b>Formatted via .format():</b> {selectedDate.format("YYYY-MM-DD")}</p>
+              <p><b>Nepali via .format():</b> {selectedDate.format("YYYY-MM-DD", "long", "long")}</p>
+              <p><b>Direct .bs property:</b> {selectedDate.bs}</p>
             </div>
-            <div>
-              <p style={{ fontWeight: '600', marginBottom: '5px' }}>English (AD):</p>
-              <p style={{ fontSize: '18px' }}>{selectedDate.ad.toISOString().split('T')[0]}</p>
-              <p style={{ fontSize: '16px', marginTop: '5px', color: '#64748b' }}>
-                {selectedDate.ad.toLocaleDateString('en-US', { 
-                  weekday: 'long',
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
-      )}
+
+        {/* Min/Max Example */}
+        <div className="example-card">
+          <h3 style={{ marginBottom: '10px' }}>2. Min/Max Constraints</h3>
+          <p style={{ marginBottom: '15px', color: '#64748b', fontSize: '14px' }}>
+            Restricted to dates between <b>2080-01-01</b> and <b>Today ({todayStr})</b>.
+          </p>
+          <NepaliDatePicker
+            min="2080-01-01"
+            max={todayStr}
+            onChange={(val) => setRestrictedDate(val)}
+          />
+          {restrictedDate && (
+            <div style={{ marginTop: '15px', padding: '10px', background: '#fff7ed', borderRadius: '8px', fontSize: '13px' }}>
+              <p><b>Selected:</b> {restrictedDate.bs}</p>
+              <p style={{ color: '#9a3412' }}>Check the calendar to see disabled dates!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        .example-card {
+          padding: 20px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          background: white;
+        }
+        .test-input-custom {
+          border-color: #10b981 !important;
+          background-color: #f0fdf4 !important;
+        }
+      `}</style>
     </div>
   );
 };

@@ -195,13 +195,20 @@
   font-weight: 700;
 }
 
-.nck-cell.empty {
-  cursor: default;
-}
-
 .nck-cell.empty:hover {
   background: transparent;
   color: inherit;
+}
+
+.nck-cell.disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.nck-cell.disabled:hover {
+  background: #f9fafb;
+  color: #d1d5db;
 }
 
 /* ===============================
@@ -226,6 +233,12 @@
   cursor: pointer;
   transition: 0.2s;
   font-family: var(--nck-font);
+}
+
+.nck-footer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 .nck-btn-today {
