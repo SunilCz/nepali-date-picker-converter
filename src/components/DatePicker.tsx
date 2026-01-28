@@ -102,18 +102,21 @@ export const NepaliDatePicker = ({
         return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
-    // When year/month dropdown opens, scroll so current/selected year or month is in view
+    // When year/month dropdown opens, set scroll position directly (no scroll animation)
     useEffect(() => {
         if (!isOpen || !activeDropdown) return;
-        
-        // Use requestAnimationFrame for smoother timing
+        const applyScroll = (container: HTMLElement, selected: HTMLElement) => {
+            const halfH = container.clientHeight / 2;
+            const itemMid = selected.offsetTop + selected.offsetHeight / 2;
+            container.scrollTop = Math.max(0, itemMid - halfH);
+        };
         const frame = requestAnimationFrame(() => {
             if (activeDropdown === 'y' && yearOptionsRef.current) {
-                const selected = yearOptionsRef.current.querySelector('.selected');
-                if (selected) selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+                const selected = yearOptionsRef.current.querySelector('.selected') as HTMLElement | null;
+                if (selected) applyScroll(yearOptionsRef.current, selected);
             } else if (activeDropdown === 'm' && monthOptionsRef.current) {
-                const selected = monthOptionsRef.current.querySelector('.selected');
-                if (selected) selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+                const selected = monthOptionsRef.current.querySelector('.selected') as HTMLElement | null;
+                if (selected) applyScroll(monthOptionsRef.current, selected);
             }
         });
         return () => cancelAnimationFrame(frame);
